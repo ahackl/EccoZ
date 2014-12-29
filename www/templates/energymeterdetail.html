@@ -1,0 +1,46 @@
+<ion-view title="">
+
+    <ion-nav-buttons side="right">
+        <a class="button button-icon icon ion-checkmark" ng-click="onItemUpdate()"></a>
+    </ion-nav-buttons>
+
+    <ion-content class="has-header">
+
+        <form>
+
+            <label class="item item-input">
+                <span class="input-label">{{'F_LABEL_NAME'|translate}}</span>
+                <input type="text" ng-model="meter.name" placeholder="{{'F_PLACE_NAME'|translate}}"/>
+            </label>
+
+
+            <label class="item item-input">
+                <span class="input-label">{{'F_LABEL_LOCATION'|translate}}</span>
+                <input type="text" ng-model="meter.location" placeholder="{{'F_PLACE_LOCATION'|translate}}"/>
+            </label>
+
+            <label class="item item-input">
+                <span class="input-label">{{'F_LABEL_NUMBER'|translate}}</span>
+                <input type="text" ng-model="meter.number" placeholder={{'F_PLACE_NUMBER'|translate}}"/>
+            </label>
+
+            <label class="item item-input">
+                <span class="input-label">{{'F_LABEL_UNIT'|translate}}</span>
+                <input type="text" ng-model="meter.unit" placeholder="{{'F_PLACE_UNIT'|translate}}"/>
+            </label>
+
+            <label class="item item-input">
+                <span class="input-label">{{'F_LABEL_COMMENT'|translate}}</span>
+                <input type="text" ng-model="meter.comment" placeholder="{{'F_PLACE_LOCATION'|translate}}"/>
+            </label>
+
+            <label class="item item-input">
+                <span class="input-label">{{'F_LABEL_UNITPRICE'|translate}}</span>
+                <input type="number" ng-model="meter.unitPrice" placeholder="{{'F_PLACE_UNITPRICE'|translate}}"/>
+            </label>
+
+        </form>
+
+    </ion-content>
+
+</ion-view>

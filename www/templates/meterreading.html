@@ -1,0 +1,36 @@
+<ion-view title="">
+    <ion-nav-buttons side="right">
+        <a class="button button-icon icon ion-plus-round" ng-click="onItemNew()"></a>
+    </ion-nav-buttons>
+    <ion-content class="has-header">
+
+        <div class="card">
+            <div class="item item-text-wrap">
+                <div style="text-align: center; font-weight: bold;">{{meter.number}}</div>
+                <br/>
+                <div style="text-align: center; font-weight: bold;">{{meter.unit}} / {{meter.unitPrice}}</div>
+                <br/>
+                <div style="text-align: center; font-weight: bold;">{{meter.comment}}</div>
+            </div>
+        </div>
+
+
+         <!--  The URL -> Same as onItemEdit -->
+         <!--   href="#/app/meter/{{oneElement.doc.EnergieMeter_id}}/reading/{{oneElement.doc._id}}" -->
+
+        <ion-list can-swipe="true">
+            <ion-item ng-repeat="oneElement in data.ListOfElements" type="item-text-wrap">
+                <h2 align="center"> {{oneElement.doc.inputDateTime | date : 'yyyy-MM-dd HH:mm' }} / {{oneElement.doc.readingValue}}</h2>
+                <ion-option-button class="button-assertive" ng-click="onItemDelete($index)">
+                    {{'B_DELETE'|translate}}
+                </ion-option-button>
+                <ion-option-button class="button-calm" ng-click="onItemEdit($index)">
+                    {{'B_EDIT'|translate}}
+                </ion-option-button>
+
+            </ion-item>
+        </ion-list>
+        <ion-infinite-scroll on-infinite="fetchMoreLines()" ng-if="!data.noMoreItemsAvailable"
+                             distance="10%"></ion-infinite-scroll>
+    </ion-content>
+</ion-view>
