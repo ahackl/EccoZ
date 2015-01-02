@@ -99,7 +99,6 @@ _control.controller('MeterReadingsCtrl', ['$scope', '$rootScope', '$state', '$tr
             $state.go('app.meter-reading-detail', { meterId: mId });
         };
 
-
         $scope.onItemDelete = function (indexId) {
 
             var confirmPopup = $ionicPopup.confirm({

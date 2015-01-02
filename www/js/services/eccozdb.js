@@ -8,84 +8,49 @@
  * Make PouchDB available in AngularJS.
  */
 _service.factory('db', ['Settings', function (Settings) {
-    PouchDB.enableAllDbs = true;
-    //PouchDB.debug.enable('*');
-    // for release:
-    PouchDB.debug.disable();
 
+    var localDb = new PouchDB(Settings.getDbName());
 
-    var localDb = new PouchDB(Settings.getDbName(), {adapter: 'websql'});
-    if (!localDb.adapter) {
-        localDb = new PouchDB(Settings.getDbName());
-    }
-
-    // check database design
-    // ---------------------
-    localDb.get(Settings.getDbDesignName(), {}, function (error, response) {
-        if (error) {
-            console.log(error);
+    // check design document
+    localDb.get(Settings.getDbDesignName()).then(function (designDocument) {
+        console.log('Design document available');
+    }).catch(function (err) {
+        if (err.status === 404) {
+            console.log('Design document not available -> create it');
             var DesignDocument = {
                 _id: Settings.getDbDesignName(),
                 language: 'javascript',
                 views: { all: { map: 'function(doc) {  emit([doc.type, doc.EnergyMeter_id, doc._id])}' } }
             };
-            localDb.put(DesignDocument, function (error, response) {
-                if (error) {
-                    console.log(error);
-                } else {
-                    console.log(response);
-                };
+            localDb.put(DesignDocument).then(function (result) {
+                console.log('Design document created: ' + result.toString());
+            }).catch(function (err) {
+                console.error('Design document not created: ' + err.toString());
             });
         } else {
-            console.log(response);
-        }
-
-    });
-    // ---------------------
-
-
-
-    // read configuration from the database
-    // ------------------------------------
-    localDb.get(Settings.getDbSettingsName(), {}, function (error, response) {
-        if (error) {
-            console.log(error);
-            var dbSettingsDocument = {
-                _id: Settings.getDbSettingsName(),
-                dbServerUrl: Settings.getDbServerUrl(),
-                dbSync: Settings.getDbSync()
-            };
-            localDb.put(dbSettingsDocument, function (error, response) {
-                if (error) {
-                    console.log(error);
-                } else {
-                    console.log(response);
-                };
-            });
-        } else {
-            console.log(response);
-            Settings.setDbServerUrl(response.dbServerUrl);
-            Settings.setDbSync(response.dbSync);
-        }
-
-
-        var remoteDb = Settings.getDbServerUrl() + Settings.getDbName();
-        var options = {live: true};
-        var syncError = function () {
-            console.log('Problem encountered during database synchronisation');
+            console.error(err.toString());
         };
-
-        if (Settings.getDbSync() == true) {
-            console.log('Replicating from local to server');
-            localDb.replicate.to(remoteDb, options, syncError);
-
-            console.log('Replicating from server back to local');
-            localDb.replicate.from(remoteDb, options, syncError);
-
-        }
-
     });
 
+    // read setting from database
+    localDb.get(Settings.getDbSettingsName()).then(function(settingDocument){
+        console.log('Read Settings from database');
+        Settings.setDbObject(settingDocument);
+        Settings.set_rev(settingDocument._rev);
+    }).catch(function(err){
+        if (err.status === 404) {
+            console.log('Setting document not available -> create it');
+            var dbSettingsDocument = Settings.getDbObject();
+            localDb.put(dbSettingsDocument).then(function (result) {
+                console.log('Setting document created: ' + result.toString());
+                Settings.set_rev(result.rev);
+            }).catch(function (err) {
+                console.error('Setting document not created: ' + err.toString());
+            });
+        } else {
+            console.error(err.toString());
+        };
+    });
 
     return localDb;
 

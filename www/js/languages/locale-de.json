@@ -21,5 +21,15 @@
 "F_LABEL_DATE": "Datum",
 "F_LABEL_TIME": "Uhrzeit",
 "F_LABEL_READING_VALUE": "Zählerstand",
-"M_TITLE_TOOLS": "Einstellungen"
+"M_TITLE_TOOLS": "Einstellungen",
+"M_TITEL_HOME": "Zählerliste",
+"M_TITEL_READINGS": "Zählerstände",
+"M_TITEL_READING_DETAIL": "Zählerstand eingeben",
+"M_TITEL_METER_DETAIL": "Zählerdaten eingeben",
+"F_LABEL_SETTING_SYNC_INTERVAL": "Minuten zwischen dem Abgleich",
+"F_LABEL_SETTING_SYNC_BOOL": "Abgleich aktiv?",
+"F_LABEL_SETTING_SYNC_URL": "Datenbankserver URL",
+"F_LABEL_SETTING_LANGUAGE": "Sprache",
+"L_DE": "Deutsch",
+"L_EN": "Englisch"
 }

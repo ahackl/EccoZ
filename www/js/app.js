@@ -38,7 +38,16 @@ _application.config(function ($stateProvider, $urlRouterProvider, $translateProv
             abstract: true,
             templateUrl: "templates/menu.html"
         })
-      .state('app.meters', {
+        .state('app.settings', {
+            url: "/settings",
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/settings.html",
+                    controller: 'SettingsCtrl'
+                }
+            }
+        })
+        .state('app.meters', {
             url: "/meters",
             views: {
                 'menuContent': {
