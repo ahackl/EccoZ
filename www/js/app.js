@@ -17,7 +17,6 @@ _application.run(function ($ionicPlatform, $translate) {
             // org.apache.cordova.statusbar required
             StatusBar.styleDefault();
         }
-        $translate.use('en')
     });
 });
 

@@ -4,6 +4,7 @@
 * Copyright (c) 2014 ; Licensed GPL 2.0
 */
 _service.service('Settings',['$translate', function($translate) {
+    'use strict';
     // use a proxy for the connection to the server.
     // https://www.npmjs.com/package/corsproxy
     // # sudo npm install -g corsproxy
@@ -96,19 +97,12 @@ _service.service('Settings',['$translate', function($translate) {
 
     this.setDbObject
         = function(dbSettingsDocument) {
-        if (dbSettingsDocument.dbServerUrl) {
-            _dbServerUrl = dbSettingsDocument.dbServerUrl;
-        }
-        if (dbSettingsDocument.dbSync) {
-            _dbSync = dbSettingsDocument.dbSync;
-        }
-        if (dbSettingsDocument.dbSyncIntervalMinutes) {
-            _dbSyncIntervalMinutes = dbSettingsDocument.dbSyncIntervalMinutes;
-        }
-        if (dbSettingsDocument.UIlanguage) {
-            _UIlanguage = dbSettingsDocument.UIlanguage
-            $translate.use(_UIlanguage);
-        }
+        _dbServerUrl = dbSettingsDocument.dbServerUrl;
+        _dbSync = dbSettingsDocument.dbSync;
+        _dbSyncIntervalMinutes = dbSettingsDocument.dbSyncIntervalMinutes;
+        _UIlanguage = dbSettingsDocument.UIlanguage
+        $translate.use(_UIlanguage);
+
     };
 
     this.getLanguageArray = function () {

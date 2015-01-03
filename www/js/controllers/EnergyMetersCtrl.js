@@ -4,8 +4,8 @@
  * Copyright (c) 2014 ; Licensed GPL 2.0
  */
 
-_control.controller('EnergyMetersCtrl', ['$scope', '$rootScope', '$state', '$translate', '$ionicPopup', 'eccozDB',
-    function ($scope, $rootScope, $state, $translate, $ionicPopup, eccozDB ) {
+_control.controller('EnergyMetersCtrl', ['$scope', '$rootScope', '$state', '$translate', '$interval', '$ionicPopup', 'eccozDB',
+    function ($scope, $rootScope, $state, $translate, $interval, $ionicPopup, eccozDB ) {
 
 
         // update the state
