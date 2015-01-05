@@ -207,8 +207,6 @@ _service.factory('eccozDB', ['$q', '$rootScope', 'Settings', '$interval',
             return delay.promise;
         }
 
-
-
         /**
          * Read all data form the database with some filter options:
          * Select only rows which are tagged with setTypeName

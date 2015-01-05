@@ -2,6 +2,9 @@
  * EccoZ
  * https://github.com/ahackl/EccoZ
  * Copyright (c) 2014 ; Licensed GPL 2.0
+ *
+ * https://github.com/mgechev/angularjs-style-guide/blob/master/README-de-de.md#routing
+ *
  */
 
 var _application = angular.module('EccoZ', ['ionic', 'pascalprecht.translate', 'eccoz.controllers', 'eccoz.services']);
@@ -43,6 +46,15 @@ _application.config(function ($stateProvider, $urlRouterProvider, $translateProv
                 'menuContent': {
                     templateUrl: "templates/settings.html",
                     controller: 'SettingsCtrl'
+                }
+            }
+        })
+        .state('app.export', {
+            url: "/export",
+            views: {
+                'menuContent': {
+                    templateUrl: "templates/export.html",
+                    controller: 'ExportCtrl'
                 }
             }
         })
