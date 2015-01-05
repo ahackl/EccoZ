@@ -2,8 +2,10 @@
  * EccoZ
  * https://github.com/ahackl/EccoZ
  * Copyright (c) 2014 ; Licensed GPL 2.0
+ *
+ * Service to communicate with the pouch database
+ *
  */
-
 _service.factory('eccozDB', ['$q', '$rootScope', 'Settings', '$interval',
     function ($q, $rootScope, Settings, $interval) {
         'use strict';
@@ -13,12 +15,10 @@ _service.factory('eccozDB', ['$q', '$rootScope', 'Settings', '$interval',
             deleteOne: deleteOne,
             getOne: getOne,
             getAll: getAll,
-            snycDB: snycDB,
             saveSettings: saveSettings
         };
 
         var localDb = new PouchDB(Settings.getDbName());
-
         var clockTimer = null;
 
 
@@ -34,17 +34,18 @@ _service.factory('eccozDB', ['$q', '$rootScope', 'Settings', '$interval',
                     views: { all: { map: 'function(doc) {  emit([doc.type, doc.EnergyMeter_id, doc._id])}' } }
                 };
                 localDb.put(DesignDocument).then(function (result) {
-                    console.log('Design document created: ' + result.toString());
+                    console.log('Design document created: ' + JSON.stringify(result));
                 }).catch(function (err) {
-                    console.error('Design document not created: ' + err.toString());
+                    console.error('Design document not created: ' + JSON.stringify(err));
                 });
             } else {
                 console.error(err.toString());
-            };
+            }
+
         });
 
         // read setting from database
-        localDb.get(Settings.getDbSettingsName()).then(function(settingDocument){
+        localDb.get(Settings.getDbSettingsName()).then(function (settingDocument) {
             console.log('Read Settings from database');
             Settings.setDbObject(settingDocument);
             Settings.set_rev(settingDocument._rev);
@@ -52,115 +53,151 @@ _service.factory('eccozDB', ['$q', '$rootScope', 'Settings', '$interval',
             // activate sync of database
             if (Settings.getDbSync() === true) {
                 startClock();
-            } else{
+            } else {
                 stopClock();
             }
 
-        }).catch(function(err){
+        }).catch(function (err) {
             if (err.status === 404) {
                 console.log('Setting document not available -> create it');
                 var dbSettingsDocument = Settings.getDbObject();
                 localDb.put(dbSettingsDocument).then(function (result) {
-                    console.log('Setting document created: ' + result.toString());
+                    console.log('Setting document created: ' + JSON.stringify(result));
                     Settings.set_rev(result.rev);
 
                     // activate sync of database
                     if (Settings.getDbSync() === true) {
                         startClock();
-                    } else{
+                    } else {
                         stopClock();
                     }
 
 
                 }).catch(function (err) {
-                    console.error('Setting document not created: ' + err.toString());
+                    console.error('Setting document not created: ' + JSON.stringify(err));
                 });
             } else {
                 console.error(err.toString());
-            };
+            }
+
         });
 
 
-        function startClock(){
-            if(clockTimer === null){
-                clockTimer = $interval(function(){
-                    snycDB();
-                }, 1000*60*Settings.getDbSyncIntervalMinutes() );
+        /**
+         * Start the timer for syncing of the database
+         */
+        function startClock() {
+            if (clockTimer === null) {
+                clockTimer = $interval(function () {syncDB();}, 1000 * 60 * Settings.getDbSyncIntervalMinutes());
             }
         }
-        function stopClock(){
-            if(clockTimer !== null){
+
+        /**
+         * Stop the timer for syncing the database
+         */
+        function stopClock() {
+            if (clockTimer !== null) {
                 $interval.cancel(clockTimer);
                 clockTimer = null;
             }
         }
+
+        /**
+         * Reads the settings parameter and save them into the database
+         */
         function saveSettings() {
-            // get back the ob
-            // ject to save it in the database
+
+            // get the data, which must be saved it in the database
             var dBSetting = Settings.getDbObject();
 
             // save the new setting to the database
             localDb.put(dBSetting).then(function (result) {
-                console.log('Settings saved: ' + result.toString());
+                console.log('Settings saved: ' + JSON.stringify(result));
                 // write the new revision number into the global setting object
                 Settings.set_rev(result.rev);
 
-                // activate sync of database
+                // activate sync of database if needed
                 if (Settings.getDbSync() === true) {
                     startClock();
-                } else{
+                } else {
                     stopClock();
                 }
 
-
-            }).catch(function (err) {
-                console.error('Settings not saved: ' + err.toString());
+            }).catch(function (error) {
+                console.error('Settings not saved: ' + JSON.stringify(error));
             });
-        };
+        }
 
+        /**
+         * Save one object into the database
+         *
+         * @param {object} databaseItem One database object
+         * @return {object} The promise of the result.
+         *
+         */
         function updateOne(databaseItem) {
             var delay = $q.defer();
             localDb.put(databaseItem, function (error, response) {
                 $rootScope.$apply(function () {
                     if (error) {
-                        console.log('Update failed: ');
-                        // console.log(error);
+                        console.log('eccozDB.updateOne failed -> ' + JSON.stringify(databaseItem));
+                        console.log('eccozDB.updateOne failed <- ' + JSON.stringify(error));
                         delay.reject(error);
                     } else {
-                        console.log('Update succeeded: ');
-                        // console.log(response);
+                        //console.log('eccozDB.updateOne succeeded -> ' + JSON.stringify(databaseItem));
+                        //console.log('eccozDB.updateOne succeeded <- ' + JSON.stringify(response));
                         delay.resolve(response);
                     }
                 });
             });
             return delay.promise;
-        };
+        }
 
-        function deleteOne(item) {
+        /**
+         * Delete one object from the database
+         *
+         * @param {object} databaseItem One database object
+         * @return {object} The promise of the result.
+         *
+         */
+        function deleteOne(databaseItem) {
             var delay = $q.defer();
-
-            localDb.remove(item.doc._id, item.doc._rev, function (error, response) {
+            localDb.remove(databaseItem.doc._id, databaseItem.doc._rev, function (error, response) {
                 $rootScope.$apply(function () {
                     if (error) {
+                        console.log('eccozDB.deleteOne failed -> ' + JSON.stringify(databaseItem));
+                        console.log('eccozDB.deleteOne failed <- ' + JSON.stringify(error));
                         delay.reject(error);
                     } else {
+                        //console.log('eccozDB.deleteOne succeeded -> ' + JSON.stringify(databaseItem));
+                        //console.log('eccozDB.deleteOne succeeded <- ' + JSON.stringify(response));
                         delay.resolve(response);
                     }
-
                 });
             });
             return delay.promise;
-        };
+        }
 
+
+        /**
+         * Read all data for one _id
+         *
+         * @param {string} item_id The _id of a database object
+         * @return {object} The promise of the result.
+         *
+         */
         function getOne(item_id) {
             var delay = $q.defer();
             var options = {};
-
             localDb.get(item_id, options, function (error, response) {
                 $rootScope.$apply(function () {
                     if (error) {
+                        console.log('eccozDB.getOne failed -> ' + JSON.stringify(item_id));
+                        console.log('eccozDB.getOne failed <- ' + JSON.stringify(error));
                         delay.reject(error);
                     } else {
+                        //console.log('eccozDB.getOne succeeded -> ' + JSON.stringify(item_id));
+                        //console.log('eccozDB.getOne succeeded <- ' + JSON.stringify(response));
                         delay.resolve(response);
                     }
 
@@ -168,12 +205,30 @@ _service.factory('eccozDB', ['$q', '$rootScope', 'Settings', '$interval',
             });
 
             return delay.promise;
-        };
+        }
 
+
+
+        /**
+         * Read all data form the database with some filter options:
+         * Select only rows which are tagged with setTypeName
+         * If the parameter "setSubId" is given, then only readings for
+         * a given Meter_id are selected.
+         * Only "setLimit" number of rows are read from the database.
+         * If more then "setLimit" rows needed, then the it is possible
+         * to skip the retrieving of the rows with "lastKeyFetched"
+         *
+         * @param {string} setTypeName Marking of rows (Reading or Meter)
+         * @param {string} setSubId The _id of a Meter
+         * @param {string} setLimit Numbers of rows
+         * @param {object} lastKeyFetched The _id of a row
+         *
+         * @return {object} The promise of the result.
+         *
+         */
         function getAll(setTypeName, setSubId, setLimit, lastKeyFetched) {
             var delay = $q.defer();
             var options = {};
-            var map = null;
 
             options.include_docs = true;
 
@@ -190,7 +245,6 @@ _service.factory('eccozDB', ['$q', '$rootScope', 'Settings', '$interval',
                     options.startkey = [setTypeName];
                     options.endkey = [setTypeName, {}, {}];
                 }
-
             } else {
                 if (lastKeyFetched != '') {
                     options.startkey = lastKeyFetched.key;
@@ -202,48 +256,56 @@ _service.factory('eccozDB', ['$q', '$rootScope', 'Settings', '$interval',
                 }
             }
 
-
             localDb.query('eccoz/all', options, function (error, response) {
                 $rootScope.$apply(function () {
                     if (error) {
+                        console.log('eccozDB.getAll failed -> ' + JSON.stringify(setTypeName)
+                                                        + " | " + JSON.stringify(setSubId)
+                                                        + " | " + JSON.stringify(setLimit)
+                                                        + " | " + JSON.stringify(lastKeyFetched) );
+                        console.log('eccozDB.getAll failed <- ' + JSON.stringify(error));
                         delay.reject(error);
                     } else {
-                        console.log('Query retrieved ' + response.rows.length + ' rows');
+                        //console.log('eccozDB.getAll succeeded -> ' + JSON.stringify(setTypeName)
+                        //                                   + " | " + JSON.stringify(setSubId)
+                        //                                   + " | " + JSON.stringify(setLimit)
+                        //                                   + " | " + JSON.stringify(lastKeyFetched) );
+                        //console.log('eccozDB.getAll succeeded <- ' + JSON.stringify(response));
+                        //console.log('eccozDB.getAll retrieved ' + response.rows.length + ' rows');
                         delay.resolve(response.rows);
                     }
                 });
             });
-
             return delay.promise;
+        }
 
-        };
 
-        function snycDB() {
+        /**
+         * Synchronization of the local and the remote pouch databases.
+         */
+        function syncDB() {
+            // stop clock, to avoid loops.
             stopClock();
+
             var localDbName = Settings.getDbName();
             var remoteDbName = Settings.getDbServerUrl() + Settings.getDbName();
+
             var options = {live: true};
 
-            var sync = PouchDB.sync(localDbName, remoteDbName, options)
+            PouchDB.sync(localDbName, remoteDbName, options)
                 .on('change', function (info) {
-                    // handle change
-                    console.log('handle change');
+                    console.log('eccozDB.syncDB - change <- ' + JSON.stringify(info));
                     startClock();
                 }).on('complete', function (info) {
-                    // handle complete
-                    console.log('handle complete');
+                    console.log('eccozDB.syncDB - complete <- ' + JSON.stringify(info));
                     startClock();
                 }).on('uptodate', function (info) {
-                    // handle up-to-date
-                    console.log('handle up-to-date: ' + info.toString());
+                    console.log('eccozDB.syncDB - uptodate <- ' + JSON.stringify(info));
                     startClock();
-                }).on('error', function (err) {
-                    // handle error
-                    console.log('handle error: ' + error);
+                }).on('error', function (error) {
+                    console.log('eccozDB.syncDB - error <- ' + JSON.stringify(error));
                     startClock();
                 });
-
-        };
-
+        }
         return service;
-}]);
+    }]);

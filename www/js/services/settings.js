@@ -5,6 +5,9 @@
 */
 _service.service('Settings',['$translate', function($translate) {
     'use strict';
+
+
+
     // use a proxy for the connection to the server.
     // https://www.npmjs.com/package/corsproxy
     // # sudo npm install -g corsproxy
