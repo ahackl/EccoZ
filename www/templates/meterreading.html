@@ -43,30 +43,6 @@
             </div>
         </ion-list>
 
-
-        <!--  The URL -> Same as onItemEdit -->
-        <!--   href="#/app/meter/{{oneElement.doc.EnergieMeter_id}}/reading/{{oneElement.doc._id}}" -->
-        <!--
-        <ion-list can-swipe="true">
-            <ion-item ng-repeat="oneElement in data.ListOfElements" type="item-text-wrap">
-
-                <div class="item item-divider" ng-if="data.ListOfElements[$index-1].key[2][0]!=oneElement.key[2][0] || data.ListOfElements[$index-1].key[2][1]!=oneElement.key[2][1]">
-                    {{oneElement.doc.inputDateTime | date : 'yyyy' }} - {{oneElement.doc.inputDateTime | date : 'MM' }}
-                </div>
-
-
-                <h2  align="center"> {{oneElement.doc.inputDateTime | date : 'yyyy-MM-dd HH:mm' }} / {{oneElement.doc.readingValue}}</h2>
-
-                <ion-option-button class="button-assertive" ng-click="onItemDelete($index)">
-                    {{'B_DELETE'|translate}}
-                </ion-option-button>
-                <ion-option-button class="button-calm" ng-click="onItemEdit($index)">
-                    {{'B_EDIT'|translate}}
-                </ion-option-button>
-
-            </ion-item>
-        </ion-list>
-        -->
         <ion-infinite-scroll on-infinite="fetchMoreLines()" ng-if="!data.noMoreItemsAvailable"
                              distance="10%"></ion-infinite-scroll>
     </ion-content>
