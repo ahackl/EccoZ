@@ -8,8 +8,10 @@
             <div class="item item-text-wrap">
                 <div style="text-align: center; font-weight: bold;">{{meter.number}}</div>
                 <br/>
+
                 <div style="text-align: center; font-weight: bold;">{{meter.unit}} / {{meter.unitPrice}}</div>
                 <br/>
+
                 <div style="text-align: center; font-weight: bold;">{{meter.comment}}</div>
             </div>
         </div>
@@ -21,20 +23,15 @@
                     {{groupedPair[0]}}
                 </ion-item>
                 <ion-item ng-repeat="item in groupedPair[1] track by item.key">
-
-
-
                     <div class="row">
                         <div class="col">
-                            <h2  align="center">
+                            <h2 align="center">
                                 <b>{{item.doc.inputDateTime | date : 'dd' }}</b>
                                 ( {{item.doc.inputDateTime | date : 'HH:mm' }} )
                             </h2>
                         </div>
-                        <div class="col"><h2  align="center">{{item.doc.readingValue | number : 2}}</h1></div>
-
-                   </div>
-
+                        <div class="col"><h2 align="center">{{item.doc.readingValue | number : 2}}</h2></div>
+                    </div>
                     <ion-option-button class="button-assertive" ng-click="onItemDelete(item)">
                         {{'B_DELETE'|translate}}
                     </ion-option-button>
@@ -47,14 +44,8 @@
         </ion-list>
 
 
-
-
-
-
-
-
-         <!--  The URL -> Same as onItemEdit -->
-         <!--   href="#/app/meter/{{oneElement.doc.EnergieMeter_id}}/reading/{{oneElement.doc._id}}" -->
+        <!--  The URL -> Same as onItemEdit -->
+        <!--   href="#/app/meter/{{oneElement.doc.EnergieMeter_id}}/reading/{{oneElement.doc._id}}" -->
         <!--
         <ion-list can-swipe="true">
             <ion-item ng-repeat="oneElement in data.ListOfElements" type="item-text-wrap">
