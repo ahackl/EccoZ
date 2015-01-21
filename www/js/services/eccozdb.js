@@ -15,7 +15,8 @@ _service.factory('eccozDB', ['$q', '$rootScope', 'Settings', '$interval',
             deleteOne: deleteOne,
             getOne: getOne,
             getAll: getAll,
-            saveSettings: saveSettings
+            saveSettings: saveSettings,
+            getAllMeterReadings: getAllMeterReadings
         };
 
         var localDb = new PouchDB(Settings.getDbName());
@@ -25,19 +26,14 @@ _service.factory('eccozDB', ['$q', '$rootScope', 'Settings', '$interval',
         // check design document
         localDb.get(Settings.getDbDesignName()).then(function (designDocument) {
             console.log('Design document available');
+            localDb.remove(designDocument._id,designDocument._rev).then(function (result) {
+                console.log('Design document deleted');
+                makeDesignDocument();
+            });
         }).catch(function (err) {
             if (err.status === 404) {
                 console.log('Design document not available -> create it');
-                var DesignDocument = {
-                    _id: Settings.getDbDesignName(),
-                    language: 'javascript',
-                    views: { all: { map: 'function(doc) {  emit([doc.type, doc.EnergyMeter_id, doc._id])}' } }
-                };
-                localDb.put(DesignDocument).then(function (result) {
-                    console.log('Design document created: ' + JSON.stringify(result));
-                }).catch(function (err) {
-                    console.error('Design document not created: ' + JSON.stringify(err));
-                });
+                makeDesignDocument();
             } else {
                 console.error(err.toString());
             }
@@ -81,6 +77,31 @@ _service.factory('eccozDB', ['$q', '$rootScope', 'Settings', '$interval',
             }
 
         });
+
+
+        /**
+         * Create a design document
+         */
+        function makeDesignDocument() {
+            var DesignDocument = {
+                _id: Settings.getDbDesignName(),
+                language: 'javascript',
+                views: { all: { map: 'function(doc) {  emit([doc.type, doc.EnergyMeter_id, doc._id])}' },
+                    allEnergyMeter: { map: 'function(doc) {  emit([doc.location, doc.name, doc._id])}' },
+                    allMeterReading: { map: 'function(doc) { ' +
+                        'var curDate = new Date(doc.inputDateTime);' +
+                        'var curYear = curDate.getFullYear().toString();' +
+                        'var curMonth = ("0" + (curDate.getMonth() + 1)).slice(-2);' +
+                        'var curDate = ("0" + curDate.getDate()).slice(-2);' +
+                        'emit([doc.EnergyMeter_id, doc.inputDateTime, [curYear,curMonth,curDate], doc._id])}' }}
+            };
+            localDb.put(DesignDocument).then(function (result) {
+                console.log('Design document created: ' + JSON.stringify(result));
+            }).catch(function (err) {
+                console.error('Design document not created: ' + JSON.stringify(err));
+            });
+        }
+
 
 
         /**
@@ -276,6 +297,83 @@ _service.factory('eccozDB', ['$q', '$rootScope', 'Settings', '$interval',
             });
             return delay.promise;
         }
+
+
+        /**
+         * Read all data readings of one meter form the database with some filter options:
+         * Only "setLimit" number of rows are read from the database.
+         * If more then "setLimit" rows needed, then the it is possible
+         * to skip the retrieving of the rows with "firstKeyFetched" "lastKeyFetched"
+         *
+         * @param {string} setSubId The _id of a meter
+         * @param {string} setLimit numbers of rows
+         * @param {object} firstKeyFetched The _id of a row
+         * @param {object} lastKeyFetched The _id of a row
+         * @param {boolean} descending sort order
+         *
+         * @return {object} The promise of the result.
+         *
+         */
+        function getAllMeterReadings(setSubId, setLimit, firstKeyFetched, lastKeyFetched, descending) {
+            var delay = $q.defer();
+            var options = {};
+
+            options.include_docs = true;
+
+            if (setLimit != 0) {
+                options.limit = setLimit;
+            }
+
+            options.descending = descending;
+
+
+            if (firstKeyFetched != '') {
+                if (options.descending === false) {
+                    options.startkey = lastKeyFetched.key;
+                    options.endkey = [setSubId, {}];
+                    //options.skip = 1;
+                } else {
+                    options.startkey = lastKeyFetched.key;
+                    options.endkey = [setSubId];
+                    options.skip = 1;
+                }
+            } else {
+                if (options.descending === false) {
+                    options.startkey = [setSubId];
+                    options.endkey = [setSubId, {}];
+                } else {
+                    options.startkey = [setSubId, {}];
+                    options.endkey = [setSubId];
+                }
+            }
+
+            localDb.query('eccoz/allMeterReading', options, function (error, response) {
+                $rootScope.$apply(function () {
+                    if (error) {
+                        console.log('eccozDB.getAllMeterReadings failed -> '
+                            + " | " + JSON.stringify(setSubId)
+                            + " | " + JSON.stringify(setLimit)
+                            + " | " + JSON.stringify(firstKeyFetched)
+                            + " | " + JSON.stringify(lastKeyFetched)
+                            + " | " + JSON.stringify(options) );
+                        console.log('eccozDB.getAllMeterReadings failed <- ' + JSON.stringify(error));
+                        delay.reject(error);
+                    } else {
+                        //console.log('eccozDB.getAllMeterReadings succeeded -> '
+                        //                                   + " | " + JSON.stringify(setSubId)
+                        //                                   + " | " + JSON.stringify(setLimit)
+                        //                                   + " | " + JSON.stringify(firstKeyFetched)
+                        //                                   + " | " + JSON.stringify(lastKeyFetched)
+                        //                                   + " | " + JSON.stringify(options) );
+                        //console.log('eccozDB.getAllMeterReadings succeeded <- ' + JSON.stringify(response));
+                        //console.log('eccozDB.getAllMeterReadings retrieved ' + response.rows.length + ' rows');
+                        delay.resolve(response.rows);
+                    }
+                });
+            });
+            return delay.promise;
+        }
+
 
 
         /**

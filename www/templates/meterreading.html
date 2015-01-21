@@ -15,12 +15,57 @@
         </div>
 
 
+        <ion-list can-swipe="true">
+            <div ng-repeat="groupedPair in data.groupedPairs track by groupedPair[0]">
+                <ion-item class="item-divider">
+                    {{groupedPair[0]}}
+                </ion-item>
+                <ion-item ng-repeat="item in groupedPair[1] track by item.key">
+
+
+
+                    <div class="row">
+                        <div class="col">
+                            <h2  align="center">
+                                <b>{{item.doc.inputDateTime | date : 'dd' }}</b>
+                                ( {{item.doc.inputDateTime | date : 'HH:mm' }} )
+                            </h2>
+                        </div>
+                        <div class="col"><h2  align="center">{{item.doc.readingValue | number : 2}}</h1></div>
+
+                   </div>
+
+                    <ion-option-button class="button-assertive" ng-click="onItemDelete(item)">
+                        {{'B_DELETE'|translate}}
+                    </ion-option-button>
+                    <ion-option-button class="button-calm" ng-click="onItemEdit(item)">
+                        {{'B_EDIT'|translate}}
+                    </ion-option-button>
+
+                </ion-item>
+            </div>
+        </ion-list>
+
+
+
+
+
+
+
+
          <!--  The URL -> Same as onItemEdit -->
          <!--   href="#/app/meter/{{oneElement.doc.EnergieMeter_id}}/reading/{{oneElement.doc._id}}" -->
-
+        <!--
         <ion-list can-swipe="true">
             <ion-item ng-repeat="oneElement in data.ListOfElements" type="item-text-wrap">
-                <h2 align="center"> {{oneElement.doc.inputDateTime | date : 'yyyy-MM-dd HH:mm' }} / {{oneElement.doc.readingValue}}</h2>
+
+                <div class="item item-divider" ng-if="data.ListOfElements[$index-1].key[2][0]!=oneElement.key[2][0] || data.ListOfElements[$index-1].key[2][1]!=oneElement.key[2][1]">
+                    {{oneElement.doc.inputDateTime | date : 'yyyy' }} - {{oneElement.doc.inputDateTime | date : 'MM' }}
+                </div>
+
+
+                <h2  align="center"> {{oneElement.doc.inputDateTime | date : 'yyyy-MM-dd HH:mm' }} / {{oneElement.doc.readingValue}}</h2>
+
                 <ion-option-button class="button-assertive" ng-click="onItemDelete($index)">
                     {{'B_DELETE'|translate}}
                 </ion-option-button>
@@ -30,6 +75,7 @@
 
             </ion-item>
         </ion-list>
+        -->
         <ion-infinite-scroll on-infinite="fetchMoreLines()" ng-if="!data.noMoreItemsAvailable"
                              distance="10%"></ion-infinite-scroll>
     </ion-content>

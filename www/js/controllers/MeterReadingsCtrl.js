@@ -4,8 +4,8 @@
  * Copyright (c) 2014 ; Licensed GPL 2.0
  */
 
-_control.controller('MeterReadingsCtrl', ['$scope', '$rootScope', '$state', '$translate', '$ionicPopup', 'eccozDB',
-    function ($scope, $rootScope, $state, $translate, $ionicPopup, eccozDB) {
+_control.controller('MeterReadingsCtrl', ['$scope', '$rootScope', '$state', '$translate', '$ionicPopup', 'eccozDB','$ionicListDelegate',
+    function ($scope, $rootScope, $state, $translate, $ionicPopup, eccozDB, $ionicListDelegate) {
 
         // update the state
         // ------------------------------------------------------------------------
@@ -50,11 +50,17 @@ _control.controller('MeterReadingsCtrl', ['$scope', '$rootScope', '$state', '$tr
         // -------------
 
         function getAllRows() {
-            var promiseGetAll = eccozDB.getAll($scope.data.tableType, myMeterId, $scope.data.limitRows, '');
+            var promiseGetAll = eccozDB.getAllMeterReadings(myMeterId, $scope.data.limitRows, '', '', true);
             promiseGetAll.then(
                 // resolve - Handler
                 function (reason) {
+
+
+                    $scope.data.groupedPairs = _.chain(reason).groupBy(function(o) {
+                        return o.key[2][0] + ' - ' + o.key[2][1];
+                    }).pairs().sortBy(0).reverse().value();
                     $scope.data.ListOfElements = reason;
+                    // $scope.groupedPairs = sortedPairs;
                     if (reason.length == $scope.data.limitRows) {
                         $scope.data.noMoreItemsAvailable = false;
 
@@ -69,11 +75,19 @@ _control.controller('MeterReadingsCtrl', ['$scope', '$rootScope', '$state', '$tr
 
         $scope.fetchMoreLines = function () {
             var LastElement = $scope.data.ListOfElements[$scope.data.ListOfElements.length - 1];
-            var promiseGetMore = eccozDB.getAll($scope.data.tableType, LastElement.doc.EnergyMeter_id, $scope.data.limitRows, LastElement);
+            var FirstElement = $scope.data.ListOfElements[0];
+            var promiseGetMore = eccozDB.getAllMeterReadings(FirstElement.doc.EnergyMeter_id,
+                                                            $scope.data.limitRows,
+                                                            FirstElement, LastElement, true);
             promiseGetMore.then(
                 // resolve - Handler
                 function (reason) {
                     $scope.data.ListOfElements = $scope.data.ListOfElements.concat(reason);
+
+                    $scope.data.groupedPairs = _.chain($scope.data.ListOfElements).groupBy(function(o) {
+                        return o.key[2][0] + ' - ' + o.key[2][1];
+                    }).pairs().sortBy(0).reverse().value();
+
                     if (reason.length == 0) {
                         $scope.data.noMoreItemsAvailable = true;
                     }
@@ -88,10 +102,10 @@ _control.controller('MeterReadingsCtrl', ['$scope', '$rootScope', '$state', '$tr
             console.log('fetchMorelines');
         };
 
-        $scope.onItemEdit = function (indexId) {
+        $scope.onItemEdit = function (item) {
+            $ionicListDelegate.closeOptionButtons();
             var mId = $state.params.meterId;
-            var rId = $scope.data.ListOfElements[indexId].id;
-            $state.go('app.meter-reading-detail', { meterId: mId, readingId: rId });
+            $state.go('app.meter-reading-detail', { meterId: mId, readingId: item.doc._id });
         };
 
         $scope.onItemNew = function () {
@@ -99,7 +113,8 @@ _control.controller('MeterReadingsCtrl', ['$scope', '$rootScope', '$state', '$tr
             $state.go('app.meter-reading-detail', { meterId: mId });
         };
 
-        $scope.onItemDelete = function (indexId) {
+        $scope.onItemDelete = function (item) {
+            $ionicListDelegate.closeOptionButtons();
 
             var confirmPopup = $ionicPopup.confirm({
                 title: $translate.instant('M_ALERT'),
@@ -108,12 +123,13 @@ _control.controller('MeterReadingsCtrl', ['$scope', '$rootScope', '$state', '$tr
             confirmPopup.then(function (res) {
                 // The 'ok' button is pressed
                 if (res) {
-                    var promiseDelete = eccozDB.deleteOne($scope.data.ListOfElements[indexId]);
+                    var promiseDelete = eccozDB.deleteOne(item);
                     promiseDelete.then(
                         // resolve - Handler
                         function (reason) {
                             console.log(reason);
-                            $scope.data.ListOfElements.splice(indexId, 1);
+                            //$scope.data.ListOfElements.splice(indexId, 1);
+                            $scope.$emit('MeterReadingsCtrl_updated');
                         },
                         // reject - Handler
                         function (reason) {
