@@ -7,9 +7,14 @@ _control.controller('ExportCtrl',
     ['$scope', 'Settings', 'eccozDB',
     function ($scope, Settings, eccozDB) {
 
+        $scope.LogText = '';
+
+
         $scope.startExport = function(){
 
-            console.log('export started');
+
+
+            $scope.LogText = 'export started';
 
             var customHeaders = {Authorization: "Basic "
                 + btoa(Settings.getWebDavUsername() + ":"
