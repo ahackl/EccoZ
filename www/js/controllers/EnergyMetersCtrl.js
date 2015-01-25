@@ -4,8 +4,9 @@
  * Copyright (c) 2014 ; Licensed GPL 2.0
  */
 
-_control.controller('EnergyMetersCtrl', ['$scope', '$rootScope', '$state', '$translate', '$interval', '$ionicPopup', 'eccozDB',
-    function ($scope, $rootScope, $state, $translate, $interval, $ionicPopup, eccozDB ) {
+_control.controller('EnergyMetersCtrl', ['$scope', '$rootScope', '$state', '$translate',
+    '$interval', '$ionicPopup', 'eccozDB', '$ionicListDelegate',
+    function ($scope, $rootScope, $state, $translate, $interval, $ionicPopup, eccozDB,$ionicListDelegate ) {
 
 
         // update the state
@@ -72,6 +73,7 @@ _control.controller('EnergyMetersCtrl', ['$scope', '$rootScope', '$state', '$tra
 
 
         $scope.onItemEdit = function (indexId) {
+            $ionicListDelegate.closeOptionButtons();
             var ElementId = $scope.data.ListOfElements[indexId].id;
             $state.go('app.meter-detail', { meterId: ElementId });
         };
@@ -86,6 +88,7 @@ _control.controller('EnergyMetersCtrl', ['$scope', '$rootScope', '$state', '$tra
                 template: $translate.instant('M_DELETE_METER')
             });
             confirmPopup.then(function (res) {
+                $ionicListDelegate.closeOptionButtons();
                 // The 'ok' button is pressed
                 if (res) {
                     var promiseDelete = eccozDB.deleteOne($scope.data.ListOfElements[indexId]);

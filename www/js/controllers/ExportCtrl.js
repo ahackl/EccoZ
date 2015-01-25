@@ -17,15 +17,13 @@ _control.controller('ExportCtrl',
 
             var exportUrl = Settings.getWebDavExportUrl() + 'eccoz_meter.csv';
 
-            var ed2 = new twoFish();
-
 
             var clientWith3Param = {
                 'host': Settings.getWebDavHost(),
                 'useHTTPS': Settings.getWebDavUseHttps(),
                 'port': Settings.getWebDavPort(),
                 'username': Settings.getWebDavUsername(),
-                'password': ed2.decryptCBCMode(Settings.getLoginPattern(), Settings.getWebDavPassword(), false)};
+                'password': Settings.getWebDavPassword()};
             var client = new nl.sara.webdav.Client( clientWith3Param );
 
             var promiseGetAll = eccozDB.getAll('EnergyMeter', '',0,'');

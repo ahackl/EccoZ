@@ -25,7 +25,7 @@
     "M_TITLE_TOOLS": "Settings",
     "M_TITEL_HOME": "List of meters",
     "M_TITEL_READINGS": "Meter values",
-    "M_TITEL_READING_DETAIL": "Edit reading value",
+    "M_TITEL_READING_DETAIL": "Reading value",
     "M_TITEL_METER_DETAIL": "Edit meter settings",
     "M_TITEL_LOGIN": "Login",
     "F_LABEL_SETTING_SYNC_INTERVAL": "Number of minutes between sync",

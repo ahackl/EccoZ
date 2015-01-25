@@ -9,8 +9,10 @@
         <ion-list can-swipe="true">
             <ion-item ng-repeat="oneElement in data.ListOfElements" type="item-text-wrap"
                       href="#/app/meter/{{oneElement.doc._id}}/readings">
-                <h2 align="center">{{oneElement.doc.name}} - {{oneElement.doc.number}}</h2>
-                <ion-option-button class="button-assertive" ng-click="onItemDelete($index)">
+                <div style="text-align: center; font-weight: bold;">{{oneElement.doc.name}} - {{oneElement.doc.number}}</div>
+                <br/>
+                <div style="text-align: center; font-weight: bold;">{{oneElement.doc.comment}}</div>
+               <ion-option-button class="button-assertive" ng-click="onItemDelete($index)">
                     {{'B_DELETE'|translate}}
                 </ion-option-button>
                 <ion-option-button class="button-calm" ng-click="onItemEdit($index)">
