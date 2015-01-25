@@ -27,6 +27,7 @@
     "M_TITEL_READINGS": "Meter values",
     "M_TITEL_READING_DETAIL": "Edit reading value",
     "M_TITEL_METER_DETAIL": "Edit meter settings",
+    "M_TITEL_LOGIN": "Login",
     "F_LABEL_SETTING_SYNC_INTERVAL": "Number of minutes between sync",
     "F_LABEL_SETTING_SYNC_BOOL": "Sync is active?",
     "F_LABEL_SETTING_SYNC_URL": "Database server URL",
@@ -40,7 +41,6 @@
     "F_LABEL_SETTING_WEBDAV": "WebDAV",
     "F_LABEL_SETTING_REMOTE_DB": "PouchDB",
     "F_LABEL_SETTING_GLOBAL": "Global",
-    "F_LABEL_SETTING_WEBDAV_COMMENT": "Attention: The password is saved without encryption.",
     "L_DE": "German",
     "L_EN": "English"
 }

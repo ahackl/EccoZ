@@ -7,6 +7,7 @@ _control.controller('SettingsCtrl',
     ['$scope', '$rootScope', 'Settings', '$state', '$translate','$ionicPopup', 'eccozDB', '$ionicHistory','$location',
     function ($scope, $rootScope, Settings, $state, $translate, $ionicPopup, eccozDB, $ionicHistory, $location) {
 
+
         // Manage the show/hide function for the save button
         $scope.change = function () {
             $scope.isChanged = true;
@@ -17,6 +18,7 @@ _control.controller('SettingsCtrl',
 
         // get all data for the display
         $scope.setting = Settings.getDbObject();
+        $scope.setting.webDavPassword = Settings.getWebDavPassword();
 
         // get the list for the selection of the languages
         $scope.setting.langlist = Settings.getLanguageArray();
@@ -67,8 +69,8 @@ _control.controller('SettingsCtrl',
             $ionicHistory.nextViewOptions({
                 disableBack: true
             });
-            // go back to home page
-            $location.path('/');
+            // go to list of meters
+            $state.go('app.meters');
 
         };
 

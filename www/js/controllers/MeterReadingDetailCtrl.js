@@ -7,6 +7,14 @@
 _control.controller('MeterReadingDetailCtrl',['$scope', '$state', '$filter', '$translate', 'eccozDB',
     function($scope, $state, $filter, $translate, eccozDB) {
 
+    // Manage the show/hide function for the save button
+    $scope.change = function () {
+        $scope.isChanged = true;
+    };
+    if ($scope.isChanged == null) {
+        $scope.isChanged = false;
+    };
+
     // The ID of the item
     var myMeterId = '';
     var myReadingId = '';

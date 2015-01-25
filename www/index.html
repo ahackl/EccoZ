@@ -7,12 +7,17 @@
 
     <link href="lib/ionic/css/ionic.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
+    <link href="css/patternLock.css" rel="stylesheet">
 
     <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
     <link href="css/ionic.app.css" rel="stylesheet">
     -->
+
+    <script src="js/vendor/jquery.min.js"></script>
+    <script src="js/vendor/patternLock.js"></script>
     <script src="js/vendor/pouchdb.min.js"></script>
     <script src="js/vendor/underscore.min.js"></script>
+
 
 
     <!-- ionic/angularjs js -->
@@ -29,11 +34,13 @@
     <script src="js/directives/directives.js"></script>
 
     <script src="js/services/services.js"></script>
+    <script src="js/services/twofish.js"></script>
     <script src="js/services/settings.js"></script>
     <script src="js/services/eccozdb.js"></script>
 
 
     <script src="js/controllers/controllers.js"></script>
+    <script src="js/controllers/LoginCtrl.js"></script>
     <script src="js/controllers/SettingsCtrl.js"></script>
     <script src="js/controllers/ExportCtrl.js"></script>
     <script src="js/controllers/EnergyMetersCtrl.js"></script>

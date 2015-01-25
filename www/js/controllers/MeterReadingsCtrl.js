@@ -114,14 +114,13 @@ _control.controller('MeterReadingsCtrl', ['$scope', '$rootScope', '$state', '$tr
         };
 
         $scope.onItemDelete = function (item) {
-            $ionicListDelegate.closeOptionButtons();
-
-            var confirmPopup = $ionicPopup.confirm({
+           var confirmPopup = $ionicPopup.confirm({
                 title: $translate.instant('M_ALERT'),
                 template: $translate.instant('M_DELETE_READING')
             });
             confirmPopup.then(function (res) {
                 // The 'ok' button is pressed
+                $ionicListDelegate.closeOptionButtons();
                 if (res) {
                     var promiseDelete = eccozDB.deleteOne(item);
                     promiseDelete.then(

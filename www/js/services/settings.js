@@ -3,7 +3,7 @@
 * https://github.com/ahackl/EccoZ
 * Copyright (c) 2014 ; Licensed GPL 2.0
 */
-_service.service('Settings',['$translate', function($translate) {
+_service.service('Settings',['$translate','TwoFish', function($translate, TwoFish) {
     'use strict';
 
     // use a proxy for the connection to the server.
@@ -19,12 +19,14 @@ _service.service('Settings',['$translate', function($translate) {
     var _dbDesignName =  '_design/eccoz';
     var _dbSettingsName = 'dbSettings';
 
+    var _LoginPattern = '123';
+
     // settings for the webDAV server
     var _webDavHost = 'localhost:9292/localhost';
     var _webDavUseHttps = false;
     var _webDavPort = 80;
     var _webDavUsername = 'username';
-    var _webDavPassword = 'password';
+    var _webDavPassword = TwoFish.encrypt(_LoginPattern,'password');
     var _webDavExportUrl = '/owncloud/remote.php/webdav/';
 
     // internal settings
@@ -37,6 +39,13 @@ _service.service('Settings',['$translate', function($translate) {
     // for the database:
     var _id = _dbSettingsName;
     var _rev = '';
+
+    this.getLoginPattern = function(){
+        return _LoginPattern;
+    };
+    this.setLoginPattern = function(pattern){
+        _LoginPattern = pattern;
+    }
 
 
     this.getWebDavHost = function(){
@@ -52,7 +61,7 @@ _service.service('Settings',['$translate', function($translate) {
         return _webDavUsername;
     };
     this.getWebDavPassword = function() {
-        return _webDavPassword;
+        return TwoFish.decrypt(_LoginPattern,_webDavPassword,false);
     };
     this.getWebDavExportUrl = function(){
         return _webDavExportUrl;
@@ -172,7 +181,12 @@ _service.service('Settings',['$translate', function($translate) {
             _webDavUsername = dbSettingsDocument.webDavUsername;
         }
         if (dbSettingsDocument.hasOwnProperty('webDavPassword')) {
-            _webDavPassword = dbSettingsDocument.webDavPassword;
+            if( Object.prototype.toString.call( dbSettingsDocument.webDavPassword ) === '[object Array]' ||
+                Object.prototype.toString.call( dbSettingsDocument.webDavPassword ) === '[object Uint8Array]') {
+                _webDavPassword = dbSettingsDocument.webDavPassword;
+            } else {
+                _webDavPassword = TwoFish.encrypt(_LoginPattern,dbSettingsDocument.webDavPassword);
+            }
         }
         if (dbSettingsDocument.hasOwnProperty('webDavExportUrl')) {
             _webDavExportUrl = dbSettingsDocument.webDavExportUrl;
