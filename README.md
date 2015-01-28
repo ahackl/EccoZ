@@ -43,5 +43,5 @@ Install the ionic framework and copy the files to the www directory.
 [D3]: https://github.com/mbostock/d3
 [jQuery]: http://jquery.com/
 [patternLock]: https://github.com/s-yadav/patternLock
-[Underscore]: http://underscorejs.org
+[Underscore]: https://github.com/jashkenas/underscore
 [webdav-client]: https://github.com/sara-nl/js-webdav-client
