@@ -19,6 +19,15 @@
                     {{'B_EDIT'|translate}}
                 </ion-option-button>
 
+                <div>
+                    <angularchart
+                            dataset="dataset[$index]"
+                            schema="schema"
+                            options="options">
+                    </angularchart>
+                </div>
+
+
             </ion-item>
         </ion-list>
         <ion-infinite-scroll on-infinite="fetchMoreLines()" ng-if="!data.noMoreItemsAvailable"

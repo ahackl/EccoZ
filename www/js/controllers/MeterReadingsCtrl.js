@@ -10,38 +10,6 @@ _control.controller('MeterReadingsCtrl', ['$scope', '$rootScope', '$state', '$tr
               $ionicPopup, eccozDB, $ionicListDelegate, $filter) {
 
 
-        $scope.dataset = [
-            {
-                'inputDateTime': '2015-01-01_00:00:00',
-                'readingValue': 1.0
-            }
-        ];
-
-
-        $scope.schema = {
-            inputDateTime: {
-                type: 'datetime',
-                format: '%Y-%m-%d_%H:%M:%S',
-                name: 'Date'
-            }
-        };
-        $scope.options = {
-            rows: [{
-                key: 'readingValue',
-                type: 'line'
-            }],
-            xAxis: {
-                key: 'inputDateTime',
-                displayFormat: '%Y-%m-%d'
-            }
-
-        };
-
-
-
-
-
-
         // Manage the show/hide function for the diagram
         $scope.isChartShown = true;
         if ($scope.isChartShown == null) {
@@ -90,41 +58,6 @@ _control.controller('MeterReadingsCtrl', ['$scope', '$rootScope', '$state', '$tr
         getAllRows();
 
 
-        $scope.chartConfig = {
-            options: {
-                chart: {
-                    type: 'line'
-                },
-                scrollbar : {
-                    enabled : false
-                },
-                navigator : {
-                    enabled : false
-                },
-                rangeSelector : {
-                    enabled: false
-                },
-                xAxis: {
-                    ordinal: false
-                }
-
-            },
-            series: [{
-                data: [
-                ],
-                marker: {
-                    enabled: false
-                }
-            }],
-            useHighStocks: true,
-
-            loading: false
-        }
-
-
-
-
-
         // the functions
         // -------------
 
@@ -144,19 +77,9 @@ _control.controller('MeterReadingsCtrl', ['$scope', '$rootScope', '$state', '$tr
                         $scope.data.noMoreItemsAvailable = false;
 
                     }
-                    var plotData = [];
-                    for (var i = $scope.data.ListOfElements.length-1; i >= 0; i--) {
-                        var dateInPlotFormat = $filter('date')(new Date($scope.data.ListOfElements[i].doc.inputDateTime),
-                            'yyyy-MM-dd_HH:mm:ss');
-                        plotData.push(
-                            { 'inputDateTime':dateInPlotFormat,
-                              'readingValue':$scope.data.ListOfElements[i].doc.readingValue}
-                        );
-                    }
-                    $scope.dataset = plotData;
+                    $scope.$emit('ChartCtrl_updated');
 
-
-                },
+              },
                 // reject - Handler
                 function (reason) {
                     console.log(reason);
@@ -182,16 +105,7 @@ _control.controller('MeterReadingsCtrl', ['$scope', '$rootScope', '$state', '$tr
                     if (reason.length == 0) {
                         $scope.data.noMoreItemsAvailable = true;
                     }
-                    var plotData = [];
-                    for (var i = $scope.data.ListOfElements.length-1; i >= 0; i--) {
-                        var dateInPlotFormat = $filter('date')(new Date($scope.data.ListOfElements[i].doc.inputDateTime),
-                            'yyyy-MM-dd_HH:mm:ss');
-                        plotData.push(
-                            { 'inputDateTime':dateInPlotFormat,
-                                'readingValue':$scope.data.ListOfElements[i].doc.readingValue}
-                        );
-                    }
-                    $scope.dataset = plotData;
+                    $scope.$emit('ChartCtrl_updated');
                     $scope.$broadcast('scroll.infiniteScrollComplete');
                 },
                 // reject - Handler

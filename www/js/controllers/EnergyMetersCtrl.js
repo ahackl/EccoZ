@@ -5,8 +5,42 @@
  */
 
 _control.controller('EnergyMetersCtrl', ['$scope', '$rootScope', '$state', '$translate',
-    '$interval', '$ionicPopup', 'eccozDB', '$ionicListDelegate',
-    function ($scope, $rootScope, $state, $translate, $interval, $ionicPopup, eccozDB,$ionicListDelegate) {
+    '$interval', '$ionicPopup', 'eccozDB', '$ionicListDelegate','$filter',
+    function ($scope, $rootScope, $state, $translate,
+              $interval, $ionicPopup, eccozDB,$ionicListDelegate, $filter) {
+
+        $scope.dataset =[
+            [{"inputDateTime":"2011-09-25_21:06:00","readingValue":1}],
+            [{"inputDateTime":"2011-09-25_21:06:00","readingValue":2}] ];
+
+
+        $scope.schema = {
+            inputDateTime: {
+                type: 'datetime',
+                format: '%Y-%m-%d_%H:%M:%S',
+                name: 'Date'
+            }
+        };
+
+        $scope.options = {
+            rows: [
+                {
+                    key: 'readingValue',
+                    type: 'area-spline'
+                }
+            ],
+            xAxis: {
+                key: 'inputDateTime',
+                displayFormat: '%Y-%m-%d'
+            },
+            size: {
+                height: 100
+            },
+            legend: {
+                show: false
+            }
+        };
+
 
 
         // update the state
@@ -28,11 +62,71 @@ _control.controller('EnergyMetersCtrl', ['$scope', '$rootScope', '$state', '$tra
         };
 
 
+        for (var i=0; i< 2* $scope.data.limitRows; i++){
+            $scope.dataset[i] = [{"inputDateTime":"2011-09-25_21:06:00","readingValue":1}];
+        }
+
+
+
+        $scope.schema = {
+            inputDateTime: {
+                type: 'datetime',
+                format: '%Y-%m-%d_%H:%M:%S',
+                name: 'Date'
+            }
+        };
+        $scope.options = {
+            rows: [
+                {
+                    key: 'readingValue',
+                    type: 'area-spline'
+                }
+            ],
+            xAxis: {
+                key: 'inputDateTime',
+                displayFormat: '%Y-%m-%d'
+            },
+            size: {
+                height: 100
+            },
+            legend: {
+                show: false
+            }
+        };
+
+
         getAllRows();
 
 
         // the functions
         // -------------
+        function getChartValues(myMeterId, index) {
+            var promiseGetAll = eccozDB.getAllMeterReadings(myMeterId, 20, '', '', true);
+            promiseGetAll.then(
+                // resolve - Handler
+                function (reason) {
+                    var plotData = [];
+                    var listOfData = reason;
+                    for (var i = listOfData.length - 1; i >= 0; i--) {
+                        var dateInPlotFormat = $filter('date')(new Date(listOfData[i].doc.inputDateTime),
+                            'yyyy-MM-dd_HH:mm:ss');
+                        plotData.push(
+                            { 'inputDateTime': dateInPlotFormat,
+                                'readingValue': listOfData[i].doc.readingValue}
+                        );
+                    }
+                    //console.log(plotData);
+                    $scope.dataset[index] = plotData;
+                },
+                // reject - Handler
+                function (reason) {
+                    console.log(reason);
+                }
+            );
+        }
+
+
+
 
         function getAllRows() {
             var promiseGetAll = eccozDB.getAll($scope.data.tableType, '', $scope.data.limitRows, '');
@@ -42,6 +136,9 @@ _control.controller('EnergyMetersCtrl', ['$scope', '$rootScope', '$state', '$tra
                     $scope.data.ListOfElements = reason;
                     if (reason.length == $scope.data.limitRows) {
                         $scope.data.noMoreItemsAvailable = false;
+                    }
+                    for (var i = 0; i < reason.length; i++) {
+                        getChartValues(reason[i].doc._id, i);
                     }
                 },
                 // reject - Handler
@@ -60,6 +157,9 @@ _control.controller('EnergyMetersCtrl', ['$scope', '$rootScope', '$state', '$tra
                     $scope.data.ListOfElements = $scope.data.ListOfElements.concat(reason);
                     if (reason.length == 0) {
                         $scope.data.noMoreItemsAvailable = true;
+                    }
+                    for (var i = 0; i < reason.length; i++) {
+                        getChartValues(reason[i].doc._id, i);
                     }
                     $scope.$broadcast('scroll.infiniteScrollComplete');
                 },

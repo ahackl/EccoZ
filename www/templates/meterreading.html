@@ -18,9 +18,9 @@
                 </div>
             </div>
             <div class="item item-text-wrap" ng-cloak ng-show="isChartShown">
-                <div>
+                <div ng-controller="ChartCtrl">
                     <angularchart
-                            dataset="dataset"
+                            dataset="dataset[0]"
                             schema="schema"
                             options="options">
                     </angularchart>
