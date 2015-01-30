@@ -6,11 +6,27 @@
 
         <div class="card">
             <div class="item item-text-wrap">
-                <div style="text-align: center; font-weight: bold;">{{meter.name}} - {{meter.number}}</div>
-                <br/>
-                <div style="text-align: center; font-weight: bold;">{{meter.comment}}</div>
+                <div class="row">
+                    <div class="col col-90">
+                        <div style="text-align: center; font-weight: bold;">{{meter.name}} - {{meter.number}}</div>
+                        <br/>
+                        <div style="text-align: center; font-weight: bold;">{{meter.comment}}</div>
+                    </div>
+                    <div class="col">
+                        <button class="button icon ion-stats-bars" ng-click="showChart()"></button>
+                    </div>
+                </div>
             </div>
-        </div>
+            <div class="item item-text-wrap" ng-cloak ng-show="isChartShown">
+                <div>
+                    <angularchart
+                            dataset="dataset"
+                            schema="schema"
+                            options="options">
+                    </angularchart>
+                </div>
+            </div>
+         </div>
 
 
         <ion-list can-swipe="true">

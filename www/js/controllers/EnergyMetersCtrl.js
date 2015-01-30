@@ -6,7 +6,7 @@
 
 _control.controller('EnergyMetersCtrl', ['$scope', '$rootScope', '$state', '$translate',
     '$interval', '$ionicPopup', 'eccozDB', '$ionicListDelegate',
-    function ($scope, $rootScope, $state, $translate, $interval, $ionicPopup, eccozDB,$ionicListDelegate ) {
+    function ($scope, $rootScope, $state, $translate, $interval, $ionicPopup, eccozDB,$ionicListDelegate) {
 
 
         // update the state

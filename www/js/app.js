@@ -7,7 +7,7 @@
  *
  */
 
-var _application = angular.module('EccoZ', ['ionic', 'pascalprecht.translate', 'eccoz.controllers', 'eccoz.services']);
+var _application = angular.module('EccoZ', ['ionic', 'pascalprecht.translate', 'eccoz.controllers', 'eccoz.services', 'angularChart']);
 
 _application.run(function ($ionicPlatform, $translate) {
     $ionicPlatform.ready(function () {
