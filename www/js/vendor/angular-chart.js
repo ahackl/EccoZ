@@ -238,6 +238,7 @@
                         scope.configuration.data.keys.x = '';
                         scope.configuration.axis.x.type = 'category';
                         scope.configuration.axis.x.tick.format = undefined;
+                        scope.configuration.axis.x.tick.count = undefined;
                         if (scope.options.xAxis && scope.options.xAxis.key) {
 
                             // set x Axis
@@ -247,7 +248,10 @@
                             if (scope.options.xAxis.displayFormat) {
                                 scope.configuration.axis.x.tick.format = scope.options.xAxis.displayFormat;
                             }
-
+                            // add tick count
+                            if (scope.options.xAxis.tickCount) {
+                                scope.configuration.axis.x.tick.count = scope.options.xAxis.tickCount;
+                            }
                             // is xAxis type specified?
                             if (scope.schema && scope.schema[scope.options.xAxis.key]) {
                                 var columne = scope.schema[scope.options.xAxis.key];
@@ -318,6 +322,12 @@
                             scope.configuration.axis.y.label = scope.options.yAxis.label;
                         } else {
                             scope.configuration.axis.y.label = '';
+                        }
+
+
+                        if (scope.options.yAxis && scope.options.yAxis.tickCount) {
+                            scope.configuration.axis.y.tick = {};
+                            scope.configuration.axis.y.tick.count = scope.options.yAxis.tickCount;
                         }
 
                         // Legend
@@ -623,7 +633,7 @@
                                     type: 'area-spline',
                                     onclick: scope.switchType,
                                     isActive: scope.options.rows[index].type === 'area' || scope.options.rows[index].type === 'area-spline',
-                                    cssClass: typeIcons['area-spline'],
+                                    cssClass: typeIcons['area-spline']
                                 }, {
                                     title: 'display data as bar chart',
                                     type: 'bar',

@@ -31,7 +31,12 @@ _control.controller('EnergyMetersCtrl', ['$scope', '$rootScope', '$state', '$tra
             ],
             xAxis: {
                 key: 'inputDateTime',
-                displayFormat: '%Y-%m-%d'
+                displayFormat: '%Y-%m',
+                tickCount: 4
+            },
+            yAxis: {
+                label: '',
+                tickCount: 4
             },
             size: {
                 height: 100
@@ -84,7 +89,12 @@ _control.controller('EnergyMetersCtrl', ['$scope', '$rootScope', '$state', '$tra
             ],
             xAxis: {
                 key: 'inputDateTime',
-                displayFormat: '%Y-%m-%d'
+                displayFormat: '%Y-%m',
+                tickCount: 4
+            },
+            yAxis: {
+                label: '',
+                tickCount: 4
             },
             size: {
                 height: 100

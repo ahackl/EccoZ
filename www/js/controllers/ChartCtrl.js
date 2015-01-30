@@ -37,10 +37,12 @@ _control.controller('ChartCtrl', ['$scope', '$rootScope','$filter',
         ],
         xAxis: {
             key: 'inputDateTime',
-            displayFormat: '%Y-%m-%d'
+            displayFormat: '%Y-%m',
+            tickCount: 4
         },
         yAxis: {
-            label: ''
+            label: '',
+            tickCount: 11
         },
         legend: {
            show: false
