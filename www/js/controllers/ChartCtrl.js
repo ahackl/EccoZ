@@ -44,6 +44,10 @@ _control.controller('ChartCtrl', ['$scope', '$rootScope','$filter',
             label: '',
             tickCount: 11
         },
+        size: {
+            height: 50,
+            width: 200
+        },
         legend: {
            show: false
         }

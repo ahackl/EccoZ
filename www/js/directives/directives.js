@@ -57,3 +57,60 @@ _application.directive('selectMe', function($timeout) {
 });
 
 
+_application.directive('eccozChart', ['$compile', function ($compile) {
+    return {
+        restrict: "E",
+        replace: true,
+        link: function(scope, element, attrs) {
+               scope.$watch('chartState', function(newVal, oldVal) {
+                   var height = element[0].offsetParent.clientHeight;
+                   var width = element[0].offsetParent.clientWidth - 30;
+                   if (newVal === 'on') {
+                       if (scope.eChartDataset.length > attrs.chartindex) {
+                           if (element.context.children.length == 0) {
+                               scope.eChartSchema = {
+                                   inputDateTime: {
+                                       type: 'datetime',
+                                       format: '%Y-%m-%d_%H:%M:%S',
+                                       name: 'Date'
+                                   }
+                               };
+                               scope.eChartOptions = {
+                                   rows: [
+                                       {
+                                           key: 'readingValue',
+                                           type: 'area-spline'
+                                       }
+                                   ],
+                                   xAxis: {
+                                       key: 'inputDateTime',
+                                       displayFormat: '%Y-%m',
+                                       tickCount: 4
+                                   },
+                                   yAxis: {
+                                       label: '',
+                                       tickCount: 11
+                                   },
+                                   size: {
+                                       height: height,
+                                       width: width
+                                   },
+                                   legend: {
+                                       show: false
+                                   },
+                                   interaction: {
+                                       enabled: false
+                                   }
+                               };
+                               element.html('<angularchart dataset="eChartDataset[' + attrs.chartindex
+                                   + ']" schema="eChartSchema" options="eChartOptions"> </angularchart>');
+                               $compile(element.contents())(scope);
+                           }
+                       }
+                   }
+               });
+           }
+
+    };
+}]);
+

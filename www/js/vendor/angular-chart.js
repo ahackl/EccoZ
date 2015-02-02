@@ -218,7 +218,15 @@
 
                         }
 
-
+                        // Interaction
+                        if (scope.options.interaction) {
+                            scope.configuration.data.interaction = {};
+                            if (scope.options.interaction.enabled) {
+                                scope.configuration.data.interaction.enabled = true;
+                            } else {
+                                scope.configuration.data.interaction.enabled = false;
+                            }
+                        }
                         // Selection
                         //
                         if (scope.options.selection && scope.options.selection.enabled) {
