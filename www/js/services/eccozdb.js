@@ -27,10 +27,10 @@ _service.factory('eccozDB', ['$q', '$rootScope', 'Settings', '$interval',
         // check design document
         localDb.get(Settings.getDbDesignName()).then(function (designDocument) {
             console.log('Design document available');
-            //localDb.remove(designDocument._id,designDocument._rev).then(function (result) {
-            //    console.log('Design document deleted');
-            //    makeDesignDocument();
-            //});
+            localDb.remove(designDocument._id,designDocument._rev).then(function (result) {
+                console.log('Design document deleted');
+                makeDesignDocument();
+            });
         }).catch(function (err) {
             if (err.status === 404) {
                 console.log('Design document not available -> create it');
