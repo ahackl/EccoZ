@@ -2,32 +2,32 @@
     <ion-nav-buttons side="right">
         <a class="button button-icon icon ion-plus-round" ng-click="onItemNew()"></a>
     </ion-nav-buttons>
-    <ion-content class="has-header">
+    <ion-content scroll="true" class="has-header" delegate-handle="mainScroll">
+
 
         <div class="card">
             <div class="item item-text-wrap">
                 <div class="row">
+                    <div class="col">
+                        <button class="button icon ion-refresh" ng-click="fetchMoreLines()"></button>
+                    </div>
                     <div class="col col-90">
                         <div style="text-align: center; font-weight: bold;">{{meter.name}} - {{meter.number}}</div>
                         <br/>
                         <div style="text-align: center; font-weight: bold;">{{meter.comment}}</div>
                     </div>
-                    <div class="col">
-                        <button class="button icon ion-stats-bars" ng-click="showChart()"></button>
-                    </div>
-                </div>
+               </div>
             </div>
             <div class="item item-text-wrap" ng-cloak ng-show="isChartShown">
-                <div ng-controller="ChartCtrl">
-                    <angularchart
-                            dataset="dataset[0]"
-                            schema="schema"
-                            options="options">
-                    </angularchart>
+                <div class="eccoz-square">
+                    <eccoz-chart chartindex="0"></eccoz-chart>
                 </div>
             </div>
          </div>
 
+        <!--
+        >>>>{{data.ListOfElements[SelectXindex]}}<<<<
+        -->
 
         <ion-list can-swipe="true">
             <div ng-repeat="groupedPair in data.groupedPairs track by groupedPair[0]">
@@ -38,8 +38,7 @@
                     <div class="row">
                         <div class="col">
                             <h2 align="center">
-                                <b>{{item.doc.inputDateTime | date : 'dd' }}</b>
-                                ( {{item.doc.inputDateTime | date : 'HH:mm' }} )
+                                <b>{{item.doc.inputDateTime | date : 'HH:mm' }}</b>
                             </h2>
                         </div>
                         <div class="col"><h2 align="center">{{item.doc.readingValue | number : 2}}</h2></div>
@@ -50,12 +49,12 @@
                     <ion-option-button class="button-calm" ng-click="onItemEdit(item)">
                         {{'B_EDIT'|translate}}
                     </ion-option-button>
-
                 </ion-item>
             </div>
         </ion-list>
 
         <ion-infinite-scroll on-infinite="fetchMoreLines()" ng-if="!data.noMoreItemsAvailable"
                              distance="10%"></ion-infinite-scroll>
+
     </ion-content>
 </ion-view>

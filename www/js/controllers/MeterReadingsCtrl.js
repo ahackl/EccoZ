@@ -5,10 +5,14 @@
  */
 
 _control.controller('MeterReadingsCtrl', ['$scope', '$rootScope', '$state', '$translate',
-                                          '$ionicPopup', 'eccozDB','$ionicListDelegate','$filter',
+                                          '$ionicPopup', 'eccozDB','$ionicListDelegate','$filter','$q','$ionicScrollDelegate',
     function ($scope, $rootScope, $state, $translate,
-              $ionicPopup, eccozDB, $ionicListDelegate, $filter) {
+              $ionicPopup, eccozDB, $ionicListDelegate, $filter,$q, $ionicScrollDelegate) {
 
+
+        $scope.scrollMainToTop = function() {
+            $ionicScrollDelegate.$getByHandle('mainScroll').scrollBottom();
+        };
 
         // Manage the show/hide function for the diagram
         $scope.isChartShown = true;
@@ -61,6 +65,24 @@ _control.controller('MeterReadingsCtrl', ['$scope', '$rootScope', '$state', '$tr
         // the functions
         // -------------
 
+        function makeChartData(data, addOrNew) {
+            $scope.eChartDataset = [];
+                        var plotData = [];
+                        for (var j = data.length - 1; j >= 0; j--) {
+                            var currentDate = new Date(data[j].doc.inputDateTime);
+                            var dateInPlotFormat = $filter('date')(currentDate, 'yyyy-MM-dd_HH:mm:ss');
+                            plotData.push(
+                                { 'inputDateTime': dateInPlotFormat,
+                                    'readingValue': data[j].doc.readingValue}
+                            );
+                        }
+                        $scope.eChartDataset.push(plotData);
+
+                    $scope.chartState = 'on';
+
+        };
+
+
         function getAllRows() {
             var promiseGetAll = eccozDB.getAllMeterReadings(myMeterId, $scope.data.limitRows, '', '', true);
             promiseGetAll.then(
@@ -69,7 +91,7 @@ _control.controller('MeterReadingsCtrl', ['$scope', '$rootScope', '$state', '$tr
 
 
                     $scope.data.groupedPairs = _.chain(reason).groupBy(function(o) {
-                        return o.key[2][0] + ' - ' + o.key[2][1];
+                        return o.key[2][0] + ' - ' + o.key[2][1] + ' - ' + o.key[2][2];
                     }).pairs().sortBy(0).reverse().value();
                     $scope.data.ListOfElements = reason;
                     // $scope.groupedPairs = sortedPairs;
@@ -77,8 +99,7 @@ _control.controller('MeterReadingsCtrl', ['$scope', '$rootScope', '$state', '$tr
                         $scope.data.noMoreItemsAvailable = false;
 
                     }
-                    $scope.$emit('ChartCtrl_updated');
-
+                    makeChartData($scope.data.ListOfElements, 'new');
               },
                 // reject - Handler
                 function (reason) {
@@ -99,13 +120,13 @@ _control.controller('MeterReadingsCtrl', ['$scope', '$rootScope', '$state', '$tr
                     $scope.data.ListOfElements = $scope.data.ListOfElements.concat(reason);
 
                     $scope.data.groupedPairs = _.chain($scope.data.ListOfElements).groupBy(function(o) {
-                        return o.key[2][0] + ' - ' + o.key[2][1];
+                        return o.key[2][0] + ' - ' + o.key[2][1] + ' - ' + o.key[2][2];
                     }).pairs().sortBy(0).reverse().value();
 
                     if (reason.length == 0) {
                         $scope.data.noMoreItemsAvailable = true;
                     }
-                    $scope.$emit('ChartCtrl_updated');
+                    makeChartData($scope.data.ListOfElements, 'new');
                     $scope.$broadcast('scroll.infiniteScrollComplete');
                 },
                 // reject - Handler

@@ -19,6 +19,7 @@ _control.controller('SettingsCtrl',
         // get all data for the display
         $scope.setting = Settings.getDbObject();
         $scope.setting.webDavPassword = Settings.getWebDavPassword();
+        $scope.setting.dbPassword = Settings.getDbPassword();
 
         // get the list for the selection of the languages
         $scope.setting.langlist = Settings.getLanguageArray();

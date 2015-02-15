@@ -11,6 +11,8 @@ _service.service('Settings',['$translate','TwoFish', function($translate, TwoFis
     // # sudo npm install -g corsproxy
     // # corsproxy
 
+    var _LoginPattern = '123';
+
     // settings for the pouch database
     var _dbServerUrl =  'http://localhost:9292/localhost:5984/';
     var _dbSync = false;
@@ -18,8 +20,9 @@ _service.service('Settings',['$translate','TwoFish', function($translate, TwoFis
     var _dbName = 'eccozdb';
     var _dbDesignName =  '_design/eccoz';
     var _dbSettingsName = 'dbSettings';
+    var _dbUsername = 'username';
+    var _dbPassword = TwoFish.encrypt(_LoginPattern,'password');
 
-    var _LoginPattern = '123';
 
     // settings for the webDAV server
     var _webDavHost = 'localhost:9292/localhost';
@@ -28,6 +31,12 @@ _service.service('Settings',['$translate','TwoFish', function($translate, TwoFis
     var _webDavUsername = 'username';
     var _webDavPassword = TwoFish.encrypt(_LoginPattern,'password');
     var _webDavExportUrl = '/owncloud/remote.php/webdav/';
+
+    // settings for the export
+    var _exDecimalSeparator = ',';
+    var _exColumnSeparator = ',';
+    var _exFileExtension = 'csv';
+    var _exDateTimeFormat = 'yyyy-MM-dd HH:mm';
 
     // internal settings
     var _MajorReleaseNo = 2;
@@ -46,6 +55,7 @@ _service.service('Settings',['$translate','TwoFish', function($translate, TwoFis
     this.setLoginPattern = function(pattern){
         _LoginPattern = pattern;
     }
+
 
 
     this.getWebDavHost = function(){
@@ -71,6 +81,21 @@ _service.service('Settings',['$translate','TwoFish', function($translate, TwoFis
     this.set_rev = function (rev) {
         _rev = rev;
     };
+
+
+    this.getExDecimalSeparator = function(){
+        return _exDecimalSeparator;
+    };
+    this.getExColumnSeparator = function(){
+        return _exColumnSeparator;
+    };
+    this.getExFileExtension = function(){
+        return _exFileExtension;
+    };
+    this.getExDateTimeFormat = function(){
+        return _exDateTimeFormat;
+    }
+
 
     this.setUIlanguage = function(UIlanguage) {
         _UIlanguage = UIlanguage;
@@ -99,6 +124,9 @@ _service.service('Settings',['$translate','TwoFish', function($translate, TwoFis
     };
     this.getDbSyncIntervalMinutes = function() {
         return _dbSyncIntervalMinutes;
+    };
+    this.getDbPassword = function() {
+        return TwoFish.decrypt(_LoginPattern,_dbPassword,false);
     };
 
     this.getDbName = function () {
@@ -134,19 +162,37 @@ _service.service('Settings',['$translate','TwoFish', function($translate, TwoFis
             dbServerUrl: _dbServerUrl,
             dbSync: _dbSync,
             dbSyncIntervalMinutes: _dbSyncIntervalMinutes,
+            dbUsername: _dbUsername,
+            dbPassword: _dbPassword,
             UIlanguage: _UIlanguage,
             webDavHost: _webDavHost,
             webDavUseHttps: _webDavUseHttps,
             webDavPort: _webDavPort,
             webDavUsername: _webDavUsername,
             webDavPassword: _webDavPassword,
-            webDavExportUrl: _webDavExportUrl
+            webDavExportUrl: _webDavExportUrl,
+            exDecimalSeparator: _exDecimalSeparator,
+            exColumnSeparator: _exColumnSeparator,
+            exFileExtension: _exFileExtension,
+            exDateTimeFormat: _exDateTimeFormat
         };
     };
 
 
     this.setDbObject = function(dbSettingsDocument) {
 
+        if (dbSettingsDocument.hasOwnProperty('exDateTimeFormat')) {
+            _exDateTimeFormat = dbSettingsDocument.exDateTimeFormat;
+        }
+        if (dbSettingsDocument.hasOwnProperty('exFileExtension')) {
+            _exFileExtension = dbSettingsDocument.exFileExtension;
+        }
+        if (dbSettingsDocument.hasOwnProperty('exColumnSeparator')) {
+            _exColumnSeparator = dbSettingsDocument.exColumnSeparator;
+        }
+        if (dbSettingsDocument.hasOwnProperty('exDecimalSeparator')) {
+            _exDecimalSeparator = dbSettingsDocument.exDecimalSeparator;
+        }
         if (dbSettingsDocument.hasOwnProperty('dbServerUrl')) {
             _dbServerUrl = dbSettingsDocument.dbServerUrl;
         }
@@ -158,6 +204,9 @@ _service.service('Settings',['$translate','TwoFish', function($translate, TwoFis
         }
         if (dbSettingsDocument.hasOwnProperty('dbSyncIntervalMinutes')) {
             _dbSyncIntervalMinutes = dbSettingsDocument.dbSyncIntervalMinutes;
+        }
+        if (dbSettingsDocument.hasOwnProperty('dbUsername')) {
+            _dbUsername = dbSettingsDocument.dbUsername;
         }
         if (dbSettingsDocument.hasOwnProperty('UIlanguage')) {
             _UIlanguage = dbSettingsDocument.UIlanguage;
@@ -188,6 +237,15 @@ _service.service('Settings',['$translate','TwoFish', function($translate, TwoFis
                 _webDavPassword = TwoFish.encrypt(_LoginPattern,dbSettingsDocument.webDavPassword);
             }
         }
+        if (dbSettingsDocument.hasOwnProperty('dbPassword')) {
+            if( Object.prototype.toString.call( dbSettingsDocument.dbPassword ) === '[object Array]' ||
+                Object.prototype.toString.call( dbSettingsDocument.dbPassword ) === '[object Uint8Array]') {
+                _dbPassword = dbSettingsDocument.dbPassword;
+            } else {
+                _dbPassword = TwoFish.encrypt(_LoginPattern,dbSettingsDocument.dbPassword);
+            }
+        }
+
         if (dbSettingsDocument.hasOwnProperty('webDavExportUrl')) {
             _webDavExportUrl = dbSettingsDocument.webDavExportUrl;
         }

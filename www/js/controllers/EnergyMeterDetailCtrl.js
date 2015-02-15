@@ -45,13 +45,12 @@ _control.controller('EnergyMeterDetailCtrl', ['$scope', '$state', '$translate', 
         // In the new mode a new item is created.
     } else {
         // create a new item
-        var NewEnergyMeterId = new Date().toJSON() + Math.random();
+        var NewEnergyMeterId = eccozDB.getID();
         $scope.meter = {
             _id: NewEnergyMeterId.toString(), // unique number
             type: 'EnergyMeter' // name of the 'table'
         }
     }
-
 
 
     // Update one row

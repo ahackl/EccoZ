@@ -55,6 +55,7 @@ _control.controller('MeterReadingDetailCtrl',['$scope', '$state', '$filter', '$t
             function(eccozDBListItem) {
                 eccozDBListItem.dummyDate = new Date(eccozDBListItem.inputDateTime);
                 eccozDBListItem.dummyTime = new Date(eccozDBListItem.inputDateTime);
+                eccozDBListItem.dummyReadingValue = parseFloat( eccozDBListItem.readingValue);
                 $scope.reading = eccozDBListItem;
             },
             // reject - Handler
@@ -65,18 +66,19 @@ _control.controller('MeterReadingDetailCtrl',['$scope', '$state', '$filter', '$t
     // In the new mode a new item is created.
     } else {
         // create a new item
-        var NewReadingId = new Date().toJSON() + Math.random();
+        var NewReadingId = eccozDB.getID();
         var currentDateTime = new Date( $filter('date')(new Date(), 'yyyy-MM-dd HH:mm'));
         $scope.reading = {
             _id: NewReadingId.toString(),
             type: 'MeterReading',
             EnergyMeter_id: myMeterId,
-            readingValue: 0.0,
+            readingValue: "0.0",
             inputDateTime:currentDateTime.toJSON(),
             dummyDate: currentDateTime,
-            dummyTime: currentDateTime
+            dummyTime: currentDateTime,
+            dummyReadingValue: 0.0
         };
-    };
+    }
 
 
 
@@ -99,6 +101,9 @@ _control.controller('MeterReadingDetailCtrl',['$scope', '$state', '$filter', '$t
         MeterReading.inputDateTime = new Date(dummyDate + ' ' + dummyTime).toJSON();
         delete MeterReading.dummyDate;
         delete MeterReading.dummyTime;
+
+        MeterReading.readingValue = MeterReading.dummyReadingValue.toString();
+        delete MeterReading.dummyReadingValue;
 
         var promiseUpdate = eccozDB.updateOne(MeterReading);
 

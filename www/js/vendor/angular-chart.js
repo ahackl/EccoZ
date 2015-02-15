@@ -121,6 +121,9 @@
                         zoom: {
                             enabled: false
                         },
+                        tooltip: {
+                            show: false
+                        },
                         grid: {
                             x: {
                                 lines: []
@@ -212,7 +215,8 @@
                                 }
                                 scope.configuration.data.axes[element.key] = element.axis;
                                 scope.configuration.axis[element.axis] = {
-                                    show: true
+                                    show: true,
+                                    tick: {}
                                 };
                             });
 
@@ -299,6 +303,11 @@
                         } else {
                             scope.configuration.axis.x.label = '';
                         }
+                        if (scope.options.xAxis && scope.options.xAxis.show) {
+                            scope.configuration.axis.x.show = scope.options.xAxis.show;
+                        } else {
+                            scope.configuration.axis.x.show = false;
+                        }
 
                         // Groups
                         //
@@ -316,6 +325,14 @@
                             scope.configuration.data.onclick = angular.noop;
                         }
 
+                        // onmouseover
+                        //
+                        if (scope.options.onmouseover) {
+                            scope.configuration.data.onmouseover = scope.options.onmouseover;
+                        } else {
+                            scope.configuration.data.onmouseover = angular.noop;
+                        }
+
                         // SubChart
                         //
                         if (scope.options.subchart) {
@@ -331,11 +348,16 @@
                         } else {
                             scope.configuration.axis.y.label = '';
                         }
-
-
+                        if (scope.options.yAxis && scope.options.yAxis.show) {
+                            scope.configuration.axis.y.show = scope.options.yAxis.show;
+                        } else {
+                            scope.configuration.axis.y.show = false;
+                        }
                         if (scope.options.yAxis && scope.options.yAxis.tickCount) {
-                            scope.configuration.axis.y.tick = {};
                             scope.configuration.axis.y.tick.count = scope.options.yAxis.tickCount;
+                        }
+                        if (scope.options.yAxis && scope.options.yAxis.displayFormat) {
+                            scope.configuration.axis.y.tick.format = scope.options.yAxis.displayFormat;
                         }
 
                         // Legend

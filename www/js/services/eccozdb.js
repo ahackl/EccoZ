@@ -16,7 +16,8 @@ _service.factory('eccozDB', ['$q', '$rootScope', 'Settings', '$interval',
             getOne: getOne,
             getAll: getAll,
             saveSettings: saveSettings,
-            getAllMeterReadings: getAllMeterReadings
+            getAllMeterReadings: getAllMeterReadings,
+            getID: getID
         };
 
         var localDb = new PouchDB(Settings.getDbName());
@@ -26,10 +27,10 @@ _service.factory('eccozDB', ['$q', '$rootScope', 'Settings', '$interval',
         // check design document
         localDb.get(Settings.getDbDesignName()).then(function (designDocument) {
             console.log('Design document available');
-            localDb.remove(designDocument._id,designDocument._rev).then(function (result) {
-                console.log('Design document deleted');
-                makeDesignDocument();
-            });
+            //localDb.remove(designDocument._id,designDocument._rev).then(function (result) {
+            //    console.log('Design document deleted');
+            //    makeDesignDocument();
+            //});
         }).catch(function (err) {
             if (err.status === 404) {
                 console.log('Design document not available -> create it');
@@ -122,6 +123,22 @@ _service.factory('eccozDB', ['$q', '$rootScope', 'Settings', '$interval',
                 clockTimer = null;
             }
         }
+
+        /**
+         * Create a ID based on the current data, time and a random number
+         *
+         * @returns {string} The ID of the database
+         */
+        function getID () {
+            var min = 0;
+            var max = 9999999999999;
+            var randomSize = 13;
+            var currentDateTime = moment().utc().format('YYYYMMDDHHmmssSSS');
+            var randValue =  Math.floor(Math.random() * (max - min + 1)) + min;
+            var zero = randomSize - randValue.toString().length + 1;
+            return currentDateTime + Array(+(zero > 0 && zero)).join("0") + randValue;
+        }
+
 
         /**
          * Reads the settings parameter and save them into the database
@@ -402,6 +419,7 @@ _service.factory('eccozDB', ['$q', '$rootScope', 'Settings', '$interval',
                     console.log('eccozDB.syncDB - error <- ' + JSON.stringify(error));
                     startClock();
                 });
+
         }
         return service;
     }]);

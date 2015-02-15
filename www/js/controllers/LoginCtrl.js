@@ -7,6 +7,8 @@
 _control.controller('LoginCtrl', ['$scope', 'Settings', '$state', '$ionicHistory',
     function ($scope, Settings, $state, $ionicHistory) {
 
+
+
         var lock = new PatternLock("#lockPattern", {
 
             onDraw:function(pattern) {

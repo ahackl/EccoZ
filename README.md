@@ -28,6 +28,8 @@ Translation
 Tools
 * [Underscore]
 * [jQuery]
+* [Moment]
+* [RainbowVis-JS]
 
 
 ## Usage
@@ -45,3 +47,5 @@ Install the ionic framework and copy the files to the www directory.
 [patternLock]: https://github.com/s-yadav/patternLock
 [Underscore]: https://github.com/jashkenas/underscore
 [webdav-client]: https://github.com/sara-nl/js-webdav-client
+[Moment]: https://github.com/moment/moment/
+[RainbowVis-JS]: https://github.com/anomal/RainbowVis-JS

@@ -8,7 +8,8 @@
             {{'F_LABEL_START_EXPORT'|translate}}
         </button>
 
-        {{LogText}}
+        <p ng-bind-html="renderHtml(LogText)"></p>
+
 
     </ion-content>
 </ion-view>

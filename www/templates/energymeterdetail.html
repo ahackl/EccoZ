@@ -39,6 +39,11 @@
                 <input type="number" ng-model="meter.unitPrice" ng-change="change()" placeholder="{{'F_PLACE_UNITPRICE'|translate}}"/>
             </label>
 
+            <label class="item item-input item-stacked-label">
+                <span class="input-label">{{'F_LABEL_ID'|translate}}</span>
+                {{meter._id}}
+            </label>
+
         </form>
 
     </ion-content>
