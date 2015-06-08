@@ -1,0 +1,24 @@
+<ion-view title="{{'M_TITLE_EXPORT'|translate}}">
+    <ion-content class="has-header">
+
+
+
+        <button class="button icon-left ion-log-in" ng-click="startExport()">
+        {{'F_LABEL_START_EXPORT'|translate}}</button>
+
+        <!--
+        <button class="button icon-left ion-log-in" ng-click="startEmail()">
+            {{'F_LABEL_START_EMAIL'|translate}}</button>
+        -->
+
+
+        <button class="button icon-left ion-log-in" ng-click="startSync()">
+            {{'F_LABEL_START_SYNC'|translate}}</button>
+
+
+        <p ng-bind-html="renderHtml(LogText)"></p>
+
+
+
+    </ion-content>
+</ion-view>

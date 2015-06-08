@@ -67,11 +67,11 @@ _control.controller('SettingsCtrl',
             eccozDB.saveSettings();
 
             // hide the back button on next view
-            $ionicHistory.nextViewOptions({
-                disableBack: true
-            });
+            // $ionicHistory.nextViewOptions({
+            //    disableBack: true
+            // });
             // go to list of meters
-            $state.go('app.meters');
+            //$state.go('app.meters');
 
         };
 

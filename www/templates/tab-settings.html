@@ -1,0 +1,140 @@
+ <ion-view title="{{'M_TITLE_TOOLS'|translate}}">
+    <ion-nav-buttons side="right">
+        <a class="button button-icon icon ion-checkmark" ng-click="onItemUpdate()" ng-cloak ng-show="isChanged"></a>
+    </ion-nav-buttons>
+    <ion-content class="has-header">
+
+        <form>
+            <div class="list">
+                <div class="item item-divider">
+                    Version: {{setting.MajorReleaseNo}}.{{setting.MinorReleaseNo}}.{{setting.PatchLevelNo}}
+                </div>
+                <div class="item item-divider">
+                    {{'F_LABEL_SETTING_GLOBAL'|translate}}
+                </div>
+
+                <label class="item item-input item-select">
+                    <div class="input-label">
+                        {{'F_LABEL_SETTING_LANGUAGE'|translate}}
+                    </div>
+                    <select ng-model="setting.langselect"
+                            ng-options="language.name for language in setting.langlist"
+                            ng-change="change()"></select>
+                </label>
+
+
+                <div class="item item-divider">
+                    {{'F_LABEL_SETTING_EXPORT'|translate}}
+                </div>
+                <label class="item item-input item-stacked-label">
+                    <span class="input-label">{{'F_LABEL_SETTING_EXPORT_DS'|translate}}</span>
+                    <input type="text" ng-model="setting.exDecimalSeparator" ng-change="change()"/>
+                </label>
+
+                <label class="item item-input item-stacked-label">
+                    <span class="input-label">{{'F_LABEL_SETTING_EXPORT_CS'|translate}}</span>
+                    <input type="text" ng-model="setting.exColumnSeparator" ng-change="change()"/>
+                </label>
+
+                <label class="item item-input item-stacked-label">
+                    <span class="input-label">{{'F_LABEL_SETTING_EXPORT_FE'|translate}}</span>
+                    <input type="text" ng-model="setting.exFileExtension" ng-change="change()"/>
+                </label>
+
+                <label class="item item-input item-stacked-label">
+                    <span class="input-label">{{'F_LABEL_SETTING_EXPORT_DT'|translate}}</span>
+                    <input type="text" ng-model="setting.exDateTimeFormat" ng-change="change()"/>
+                </label>
+
+
+
+
+                <div class="item item-divider">
+                    {{'F_LABEL_SETTING_REMOTE_DB'|translate}}
+                </div>
+
+                <!--
+                <label class="item item-input item-stacked-label">
+                    <span class="input-label">{{'F_LABEL_SETTING_DB_USERNAME'|translate}}</span>
+                    <input type="text" ng-model="setting.dbUsername" ng-change="change()"/>
+                </label>
+
+                <label class="item item-input item-stacked-label">
+                    <span class="input-label">{{'F_LABEL_SETTING_DB_PASSWORD'|translate}}</span>
+                    <input type="text" ng-model="setting.dbPassword" ng-change="change()"/>
+                </label>
+                -->
+<!--
+                <label class="item item-input item-stacked-label">
+                    <span class="input-label">{{'F_LABEL_SETTING_SYNC_INTERVAL'|translate}}</span>
+                    <input type="number" ng-model="setting.dbSyncIntervalMinutes" ng-change="change()"/>
+                </label>
+
+                <li class="item item-toggle">
+                    {{'F_LABEL_SETTING_SYNC_BOOL'|translate}}
+                    <label class="toggle">
+                        <input type="checkbox" ng-model="setting.dbSync" ng-change="change()"/>
+
+                        <div class="track">
+                            <div class="handle"></div>
+                        </div>
+                    </label>
+                </li>
+-->
+                <label class="item item-input item-stacked-label">
+                    <span class="input-label">{{'F_LABEL_SETTING_SYNC_URL'|translate}}</span>
+                    <input type="text" ng-model="setting.dbServerUrl" ng-change="change()"/>
+                </label>
+
+                <div class="item item-divider">
+                    {{'F_LABEL_SETTING_WEBDAV'|translate}}
+                </div>
+
+
+                <label class="item item-input item-stacked-label">
+                    <span class="input-label">{{'F_LABEL_SETTING_WEBDAV_HOST'|translate}}</span>
+                    <input type="text" ng-model="setting.webDavHost" ng-change="change()"/>
+                </label>
+
+                <label class="item item-input item-stacked-label">
+                    <span class="input-label">{{'F_LABEL_SETTING_WEBDAV_PORT'|translate}}</span>
+                    <input type="number" ng-model="setting.webDavPort" ng-change="change()"/>
+                </label>
+
+
+                <label class="item item-input item-stacked-label">
+                    <span class="input-label">{{'F_LABEL_SETTING_WEBDAV_USERNAME'|translate}}</span>
+                    <input type="text" ng-model="setting.webDavUsername" ng-change="change()"/>
+                </label>
+
+                <label class="item item-input item-stacked-label">
+                    <span class="input-label">{{'F_LABEL_SETTING_WEBDAV_PASSWORD'|translate}}</span>
+                    <input type="text" ng-model="setting.webDavPassword" ng-change="change()"/>
+                </label>
+
+                <label class="item item-input item-stacked-label">
+                    <span class="input-label">{{'F_LABEL_SETTING_WEBDAV_URL'|translate}}</span>
+                    <input type="text" ng-model="setting.webDavExportUrl" ng-change="change()"/>
+                </label>
+
+                <br/>
+                {{'F_LABEL_SETTING_WEBDAV_URL_RESULT'|translate}}:
+                <br/>
+                http://{{setting.webDavHost}}:{{setting.webDavPort}}{{setting.webDavExportUrl}}
+                <!--
+                <li class="item item-toggle">
+                    {{'F_LABEL_SETTING_WEBDAV_HTTPS_BOOL'|translate}}
+                    <label class="toggle">
+                        <input type="checkbox" ng-model="setting.webDavUseHttps" ng-change="change()"/>
+
+                        <div class="track">
+                            <div class="handle"></div>
+                        </div>
+                    </label>
+                </li>
+                -->
+
+            </div>
+        </form>
+    </ion-content>
+</ion-view>

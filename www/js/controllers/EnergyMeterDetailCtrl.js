@@ -4,8 +4,8 @@
  * Copyright (c) 2014 ; Licensed GPL 2.0
  */
 
-_control.controller('EnergyMeterDetailCtrl', ['$scope', '$state', '$translate', 'eccozDB',
-    function ($scope, $state, $translate, eccozDB) {
+_control.controller('EnergyMeterDetailCtrl', ['$scope', '$state', '$translate', 'eccozDB','$ionicHistory',
+    function ($scope, $state, $translate, eccozDB, $ionicHistory) {
 
     // Manage the show/hide function for the save button
     $scope.change = function () {
@@ -71,15 +71,19 @@ _control.controller('EnergyMeterDetailCtrl', ['$scope', '$state', '$translate', 
         promiseUpdate.then(
             // resolve - Handler
             function (reason) {
-                console.log(reason);
+                console.log(JSON.stringify(reason));
                 $scope.$emit('EnergyMetersCtrl_updated');
-                $state.go('app.meters');
+                // $state.go('app.meters');
+                // $window.history.back();
+                $ionicHistory.goBack();
             },
             // reject - Handler
             function (reason) {
                 console.log(reason);
             }
-        );
+        ).catch(function (error) {
+                console.error(JSON.stringify(error));
+            });
 
     };
 

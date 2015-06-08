@@ -5,7 +5,6 @@
  *
  * Service for encrypt and decrypt based on
  * https://github.com/wouldgo/twofish
- *
  */
 _service.factory('TwoFish', ['$q',
     function ($q) {

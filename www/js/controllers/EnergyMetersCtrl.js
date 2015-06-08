@@ -9,6 +9,8 @@ _control.controller('EnergyMetersCtrl', ['$scope', '$rootScope', '$state', '$tra
     function ($scope, $rootScope, $state, $translate,
               $interval, $ionicPopup, eccozDB, $ionicListDelegate, $filter, $q) {
 
+
+
         $scope.chartState = 'off';
         $interval(changeChartState, 1000);
         function changeChartState() {
@@ -19,6 +21,7 @@ _control.controller('EnergyMetersCtrl', ['$scope', '$rootScope', '$state', '$tra
         // ------------------------------------------------------------------------
         var myListener = $rootScope.$on('EnergyMetersCtrl_updated', function (event) {
             event.stopPropagation();
+            $scope.data.ListOfElements = [];
             getAllRows();
         });
         $scope.$on('$destroy', myListener);
@@ -28,7 +31,7 @@ _control.controller('EnergyMetersCtrl', ['$scope', '$rootScope', '$state', '$tra
             showDelete: false,          // Toggle icon on/off
             showEdit: true,             // Toggle icon on/off
             noMoreItemsAvailable: true, // Toggle scroll log
-            limitRows: 2,              // Number of rows in the UI
+            limitRows: 15,              // Number of rows in the UI
             ListOfElements: [],         // The list of the elements
             tableType: 'EnergyMeter'    // Name of the table
         };
@@ -39,35 +42,23 @@ _control.controller('EnergyMetersCtrl', ['$scope', '$rootScope', '$state', '$tra
             var promiseList = [];
             $scope.chartState = 'off';
             for (var i = 0; i < reason.length; i++) {
-                promiseList.push(eccozDB.getAllMeterReadings(reason[i].doc._id, 20, '', '', true));
+                promiseList.push(eccozDB.getAllMeterReadingsGraph(reason[i].doc._id, reason[i].doc.nodays, true));
             }
             $q.all(promiseList).then(function (data) {
                     if ($scope.eChartDataset === undefined || addOrNew === 'new'){
                         $scope.eChartDataset = [];
-                    };
-                    for (var i = 0; i < data.length; i++) {
-                        var plotData = [];
-                        for (var j = data[i].length - 1; j >= 0; j--) {
-                            var currentDate = new Date(data[i][j].doc.inputDateTime);
-                            var dateInPlotFormat = $filter('date')(currentDate, 'yyyy-MM-dd_HH:mm:ss');
-                            plotData.push(
-                                { 'inputDateTime': dateInPlotFormat,
-                                    'readingValue': data[i][j].doc.readingValue}
-                            );
-                        }
-                        $scope.eChartDataset.push(plotData);
                     }
+                    $scope.eChartDataset = data;
                     $scope.chartState = 'on';
                 }
             );
-
-        };
+        }
 
 
         // the functions
         // -------------
         function getAllRows() {
-            var promiseGetAll = eccozDB.getAll($scope.data.tableType, '', $scope.data.limitRows, '');
+            var promiseGetAll = eccozDB.getAllEnergyMeters($scope.data.limitRows,'');
             promiseGetAll.then(
                 // resolve - Handler
                 function (reason) {
@@ -86,7 +77,7 @@ _control.controller('EnergyMetersCtrl', ['$scope', '$rootScope', '$state', '$tra
 
         $scope.fetchMoreLines = function () {
             var LastElement = $scope.data.ListOfElements[$scope.data.ListOfElements.length - 1];
-            var promiseGetMore = eccozDB.getAll($scope.data.tableType, '', $scope.data.limitRows, LastElement);
+            var promiseGetMore = eccozDB.getAllEnergyMeters($scope.data.limitRows,LastElement);
             promiseGetMore.then(
                 // resolve - Handler
                 function (reason) {
@@ -94,7 +85,7 @@ _control.controller('EnergyMetersCtrl', ['$scope', '$rootScope', '$state', '$tra
                     if (reason.length == 0) {
                         $scope.data.noMoreItemsAvailable = true;
                     }
-                    makeChartData(reason,'add')
+                    makeChartData(reason,'add');
                     $scope.$broadcast('scroll.infiniteScrollComplete');
                 },
                 // reject - Handler
@@ -106,14 +97,21 @@ _control.controller('EnergyMetersCtrl', ['$scope', '$rootScope', '$state', '$tra
         };
 
 
+        $scope.doRefresh = function() {
+            //console.log("doRefresh");
+            $scope.data.ListOfElements = [];
+            getAllRows();
+            $scope.$broadcast('scroll.refreshComplete');
+        }
+
         $scope.onItemEdit = function (indexId) {
             $ionicListDelegate.closeOptionButtons();
             var ElementId = $scope.data.ListOfElements[indexId].id;
-            $state.go('app.meter-detail', { meterId: ElementId });
+            $state.go('tab.energymeter-detail', { meterId: ElementId });
         };
 
         $scope.onItemNew = function () {
-           $state.go('app.meter-detail');
+           $state.go('tab.energymeter-detail');
         };
 
         $scope.onItemDelete = function (indexId) {

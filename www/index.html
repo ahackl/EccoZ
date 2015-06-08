@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
+<html>
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
@@ -7,56 +7,69 @@
 
     <link href="lib/ionic/css/ionic.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
-    <link href="css/patternLock.css" rel="stylesheet">
-    <link href="css/c3.css" rel="stylesheet">
+    <link href="lib/patternlock/patternLock.css" rel="stylesheet">
+    <link href="lib/c3/c3.min.css" rel="stylesheet">
+    <link href="lib/angular-chart/css/angular-chart.min.css" rel="stylesheet">
+
 
     <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
     <link href="css/ionic.app.css" rel="stylesheet">
     -->
 
-    <script src="js/vendor/jquery.min.js"></script>
-    <script src="js/vendor/patternLock.js"></script>
-    <script src="js/vendor/pouchdb.js"></script>
-    <script src="js/vendor/underscore.min.js"></script>
-    <script src="js/vendor/moment.js"></script>
-    <script src="js/vendor/d3.min.js"></script>
-    <script src="js/vendor/c3.min.js"></script>
-    <script src="js/vendor/rainbowvis.js"></script>
-
     <!-- ionic/angularjs js -->
+    <script src="lib/jquery/dist/jquery.min.js"></script>
+    <script src="lib/patternlock/patternLock.js"></script>
+    <script src="lib/rainbow/rainbowvis.js"></script>
     <script src="lib/ionic/js/ionic.bundle.js"></script>
-    <script src="js/vendor/angular-translate.min.js"></script>
-    <script src="js/vendor/angular-translate-loader-static-files.min.js"></script>
-    <script src="js/vendor/webdav.min.js"></script>
-    <script src="js/vendor/angular-chart.js"></script>
+    <script src="lib/underscore/underscore.js"></script>
+    <script src="lib/moment/moment.js"></script>
+    <script src="lib/angular-translate/angular-translate.min.js"></script>
+    <script src="lib/angular-translate-loader-static-files/angular-translate-loader-static-files.min.js"></script>
+    <script src="lib/pouchdb/dist/pouchdb.min.js"></script>
+    <script src="lib/d3/d3.min.js"></script>
+    <script src="lib/c3/c3.min.js"></script>
+    <!--
+    <script src="lib/angular-chart/angular-chart.js"></script>
+    -->
+    <script src="lib/angular-chart-adapted/angular-chart-adapted.js"></script>
 
+    <script src="lib/webdav/webdav.min.js"></script>
 
     <!-- cordova script (this will be a 404 during development) -->
     <script src="cordova.js"></script>
 
     <!-- your app's js -->
     <script src="js/app.js"></script>
-    <script src="js/directives/directives.js"></script>
+    <script src="js/directives.js"></script>
 
     <script src="js/services/services.js"></script>
     <script src="js/services/twofish.js"></script>
     <script src="js/services/settings.js"></script>
     <script src="js/services/eccozdb.js"></script>
 
-
     <script src="js/controllers/controllers.js"></script>
-    <script src="js/controllers/ChartCtrl.js"></script>
-    <script src="js/controllers/LoginCtrl.js"></script>
+    <script src="js/controllers/SignInCtrl.js"></script>
     <script src="js/controllers/SettingsCtrl.js"></script>
-    <script src="js/controllers/ExportCtrl.js"></script>
     <script src="js/controllers/EnergyMetersCtrl.js"></script>
     <script src="js/controllers/EnergyMeterDetailCtrl.js"></script>
     <script src="js/controllers/MeterReadingsCtrl.js"></script>
     <script src="js/controllers/MeterReadingDetailCtrl.js"></script>
+    <script src="js/controllers/ExportCtrl.js"></script>
 
   </head>
-
   <body ng-app="EccoZ">
+    <!--
+      The nav bar that will be updated as we navigate between views.
+    -->
+    <ion-nav-bar class="bar-positive">
+      <ion-nav-back-button>
+      </ion-nav-back-button>
+    </ion-nav-bar>
+    <!--
+      The views will be rendered in the <ion-nav-view> directive below
+      Templates are in the /templates folder (but you could also
+      have templates inline in this html file if you'd like).
+    -->
     <ion-nav-view></ion-nav-view>
   </body>
 </html>

@@ -4,10 +4,9 @@
  * Copyright (c) 2014 ; Licensed GPL 2.0
  *
  * Service to communicate with the pouch database
- *
  */
-_service.factory('eccozDB', ['$q', '$rootScope', 'Settings', '$interval',
-    function ($q, $rootScope, Settings, $interval) {
+_service.factory('eccozDB', ['$q', '$rootScope', 'Settings', '$interval', '$filter',
+    function ($q, $rootScope, Settings, $interval, $filter) {
         'use strict';
 
         var service = {
@@ -17,7 +16,10 @@ _service.factory('eccozDB', ['$q', '$rootScope', 'Settings', '$interval',
             getAll: getAll,
             saveSettings: saveSettings,
             getAllMeterReadings: getAllMeterReadings,
-            getID: getID
+            getAllEnergyMeters: getAllEnergyMeters,
+            getAllMeterReadingsGraph: getAllMeterReadingsGraph,
+            getID: getID,
+            syncDB: syncDB
         };
 
         var localDb = new PouchDB(Settings.getDbName());
@@ -26,11 +28,13 @@ _service.factory('eccozDB', ['$q', '$rootScope', 'Settings', '$interval',
 
         // check design document
         localDb.get(Settings.getDbDesignName()).then(function (designDocument) {
-            console.log('Design document available');
-            localDb.remove(designDocument._id,designDocument._rev).then(function (result) {
-                console.log('Design document deleted');
-                makeDesignDocument();
-            });
+            console.log('Design document available: ' + JSON.stringify(designDocument));
+            //localDb.remove(designDocument._id,designDocument._rev).then(function (result) {
+            //    console.log('Design document deleted: ' + JSON.stringify(result));
+            //    makeDesignDocument();
+            //}).catch(function (err) {
+            //    console.error('Design document not deleted: ' + JSON.stringify(err));
+            //});
         }).catch(function (err) {
             if (err.status === 404) {
                 console.log('Design document not available -> create it');
@@ -88,14 +92,20 @@ _service.factory('eccozDB', ['$q', '$rootScope', 'Settings', '$interval',
                 _id: Settings.getDbDesignName(),
                 language: 'javascript',
                 views: { all: { map: 'function(doc) {  emit([doc.type, doc.EnergyMeter_id, doc._id])}' },
-                    allEnergyMeter: { map: 'function(doc) {  emit([doc.location, doc.name, doc._id])}' },
+                    allEnergyMeter: { map: 'function(doc) {  emit([doc.type, doc.location, doc.name, doc._id])}' },
                     allMeterReading: { map: 'function(doc) { ' +
                         'var curDate = new Date(doc.inputDateTime);' +
                         'var curYear = curDate.getFullYear().toString();' +
                         'var curMonth = ("0" + (curDate.getMonth() + 1)).slice(-2);' +
                         'var curDate = ("0" + curDate.getDate()).slice(-2);' +
-                        'emit([doc.EnergyMeter_id, doc.inputDateTime, [curYear,curMonth,curDate], doc._id])}' }}
-            };
+                        'emit([doc.EnergyMeter_id, doc.inputDateTime, [curYear,curMonth,curDate], doc._id])}' },
+                    allMeterReadingGraph: { map: 'function(doc) { ' +
+                        'var curDate = new Date(doc.inputDateTime);' +
+                        'var curYear = curDate.getFullYear().toString();' +
+                        'var curMonth = ("0" + (curDate.getMonth() + 1)).slice(-2);' +
+                        'var curDate = ("0" + curDate.getDate()).slice(-2);' +
+                        'emit([doc.EnergyMeter_id,  [curYear,curMonth,curDate], doc.inputDateTime, doc._id])}' }}
+                };
             localDb.put(DesignDocument).then(function (result) {
                 console.log('Design document created: ' + JSON.stringify(result));
             }).catch(function (err) {
@@ -136,7 +146,7 @@ _service.factory('eccozDB', ['$q', '$rootScope', 'Settings', '$interval',
             var currentDateTime = moment().utc().format('YYYYMMDDHHmmssSSS');
             var randValue =  Math.floor(Math.random() * (max - min + 1)) + min;
             var zero = randomSize - randValue.toString().length + 1;
-            return currentDateTime + Array(+(zero > 0 && zero)).join("0") + randValue;
+            return currentDateTime + [(+(zero > 0 && zero))].join("0") + randValue;
         }
 
 
@@ -256,7 +266,7 @@ _service.factory('eccozDB', ['$q', '$rootScope', 'Settings', '$interval',
          *
          * @param {string} setTypeName Marking of rows (Reading or Meter)
          * @param {string} setSubId The _id of a Meter
-         * @param {string} setLimit Numbers of rows
+         * @param {number} setLimit Numbers of rows
          * @param {object} lastKeyFetched The _id of a row
          *
          * @return {object} The promise of the result.
@@ -317,13 +327,65 @@ _service.factory('eccozDB', ['$q', '$rootScope', 'Settings', '$interval',
 
 
         /**
+         * Read all energy meters from the database with some filter options:
+         * Only "setLimit" number of rows are read from the database.
+         * If more then "setLimit" rows needed, then the it is possible
+         * to skip the retrieving of the rows with "lastKeyFetched"
+         *
+         * @param {number} setLimit Numbers of rows
+         * @param {object} lastKeyFetched The _id of a row
+         *
+         * @return {object} The promise of the result.
+         *
+         */
+        function getAllEnergyMeters(setLimit, lastKeyFetched) {
+            var delay = $q.defer();
+            var options = {};
+
+            options.include_docs = true;
+
+            if (setLimit != 0) {
+                options.limit = setLimit;
+            }
+
+            if (lastKeyFetched != '') {
+                options.startkey = lastKeyFetched.key;
+                options.endkey = ["EnergyMeter",{}, {}, {}];
+                options.skip = 1;
+            } else {
+                options.startkey = ["EnergyMeter"];
+                options.endkey = ["EnergyMeter", {}, {}, {}];
+            }
+
+            localDb.query('eccoz/allEnergyMeter', options, function (error, response) {
+                $rootScope.$apply(function () {
+                    if (error) {
+                        console.log('eccozDB.getAll failed -> '
+                            + " | " + JSON.stringify(setLimit)
+                            + " | " + JSON.stringify(lastKeyFetched) );
+                        console.log('eccozDB.getAll failed <- ' + JSON.stringify(error));
+                        delay.reject(error);
+                    } else {
+                        //console.log('eccozDB.getAll succeeded -> '
+                        //                                   + " | " + JSON.stringify(setLimit)
+                        //                                   + " | " + JSON.stringify(lastKeyFetched) );
+                        //console.log('eccozDB.getAll succeeded <- ' + JSON.stringify(response));
+                        //console.log('eccozDB.getAll retrieved ' + response.rows.length + ' rows');
+                        delay.resolve(response.rows);
+                    }
+                });
+            });
+            return delay.promise;
+        }
+
+        /**
          * Read all data readings of one meter form the database with some filter options:
          * Only "setLimit" number of rows are read from the database.
          * If more then "setLimit" rows needed, then the it is possible
          * to skip the retrieving of the rows with "firstKeyFetched" "lastKeyFetched"
          *
          * @param {string} setSubId The _id of a meter
-         * @param {string} setLimit numbers of rows
+         * @param {number} setLimit numbers of rows
          * @param {object} firstKeyFetched The _id of a row
          * @param {object} lastKeyFetched The _id of a row
          * @param {boolean} descending sort order
@@ -391,35 +453,139 @@ _service.factory('eccozDB', ['$q', '$rootScope', 'Settings', '$interval',
             return delay.promise;
         }
 
+        /**
+         * Read all data readings of one meter form the database with some filter options:
+         *
+         * @param {string} setSubId The _id of a meter
+         * @param {number} NoDays numbers in the diagram
+         * @param {boolean} descending sort order
+         *
+         * @return {object} The promise of the result for the diagram
+         *
+         */
+        function getAllMeterReadingsGraph(setSubId, NoDays, descending) {
+            var delay = $q.defer();
+            var options = {};
 
+            options.include_docs = true;
+
+            options.descending = descending;
+
+            var CurrentDate = moment();
+
+            var currentYear = CurrentDate.utc().format('YYYY');
+            var currentMonths = CurrentDate.utc().format('MM');
+            var currentDay = CurrentDate.utc().format('DD');
+
+            CurrentDate.subtract(NoDays, 'days');
+
+            var beforeYear = CurrentDate.utc().format('YYYY');
+            var beforeMonths = CurrentDate.utc().format('MM');
+            var beforeDay = CurrentDate.utc().format('DD');
+
+            var LastKey = [currentYear, currentMonths, currentDay ];
+            var FirstKey = [beforeYear, beforeMonths, beforeDay ];
+
+
+            if (options.descending === false) {
+                options.startkey = [setSubId, FirstKey];
+                options.endkey = [setSubId, LastKey, {}];
+            } else {
+                options.startkey = [setSubId, LastKey, {}];
+                options.endkey = [setSubId, FirstKey];
+            }
+
+
+
+            localDb.query('eccoz/allMeterReadingGraph', options, function (error, response) {
+                $rootScope.$apply(function () {
+                    if (error) {
+                        console.log('eccozDB.allMeterReadingGraph failed -> '
+                            + " | " + JSON.stringify(setSubId)
+                            + " | " + JSON.stringify(NoDays)
+                            + " | " + JSON.stringify(options) );
+                        console.log('eccozDB.allMeterReadingGraph failed <- ' + JSON.stringify(error));
+                        delay.reject(error);
+                    } else {
+                     //   console.log('eccozDB.allMeterReadingGraph succeeded -> '
+                     //                                      + " | " + JSON.stringify(setSubId)
+                     //                                      + " | " + JSON.stringify(NoDays)
+                     //                                      + " | " + JSON.stringify(options) );
+                     //   console.log('eccozDB.allMeterReadingGraph succeeded <- ' + JSON.stringify(response));
+                     //   console.log('eccozDB.allMeterReadingGraph retrieved ' + response.rows.length + ' rows');
+                        var data = response.rows;
+                        var plotData = [];
+                        for (var j = data.length - 1; j >= 0; j--) {
+                            var currentDate = new Date(data[j].doc.inputDateTime);
+                            var dateInPlotFormat = $filter('date')(currentDate, 'yyyy-MM-dd_HH:mm:ss');
+                            plotData.push(
+                                { 'inputDateTime': dateInPlotFormat,
+                                    'readingValue': data[j].doc.readingValue}
+                            );
+                        }
+                        delay.resolve(plotData);
+                    }
+                });
+            });
+            return delay.promise;
+        }
 
         /**
          * Synchronization of the local and the remote pouch databases.
          */
         function syncDB() {
+            var delay = $q.defer();
+
             // stop clock, to avoid loops.
-            stopClock();
+            if (Settings.getDbSync() === true) {
+                stopClock();
+            }
 
             var localDbName = Settings.getDbName();
             var remoteDbName = Settings.getDbServerUrl() + Settings.getDbName();
 
-            var options = {live: true};
+            var options = {live: false};
 
             PouchDB.sync(localDbName, remoteDbName, options)
                 .on('change', function (info) {
                     console.log('eccozDB.syncDB - change <- ' + JSON.stringify(info));
-                    startClock();
+                    delay.resolve('eccozDB.syncDB - change <- ' + JSON.stringify(info));
+                    if (Settings.getDbSync() === true) {
+                        startClock();
+                    }
                 }).on('complete', function (info) {
                     console.log('eccozDB.syncDB - complete <- ' + JSON.stringify(info));
-                    startClock();
-                }).on('uptodate', function (info) {
-                    console.log('eccozDB.syncDB - uptodate <- ' + JSON.stringify(info));
-                    startClock();
+                    delay.resolve('eccozDB.syncDB - complete <- ' + JSON.stringify(info));
+                    if (Settings.getDbSync() === true) {
+                        startClock();
+                    }
+                }).on('paused', function (info) {
+                    console.log('eccozDB.syncDB - paused <- ' + JSON.stringify(info));
+                    delay.resolve('eccozDB.syncDB - paused <- ' + JSON.stringify(info));
+                    if (Settings.getDbSync() === true) {
+                        startClock();
+                    }
+                }).on('active', function (info) {
+                    console.log('eccozDB.syncDB - active <- ' + JSON.stringify(info));
+                    delay.resolve('eccozDB.syncDB - active <- ' + JSON.stringify(info));
+                    if (Settings.getDbSync() === true) {
+                        startClock();
+                    }
+                }).on('denied', function (info) {
+                    console.log('eccozDB.syncDB - denied <- ' + JSON.stringify(info));
+                    delay.resolve('eccozDB.syncDB - denied <- ' + JSON.stringify(info));
+                    if (Settings.getDbSync() === true) {
+                        startClock();
+                    }
                 }).on('error', function (error) {
                     console.log('eccozDB.syncDB - error <- ' + JSON.stringify(error));
-                    startClock();
+                    delay.resolve('eccozDB.syncDB - error <- ' + JSON.stringify(error));
+                    if (Settings.getDbSync() === true) {
+                        startClock();
+                    }
                 });
 
+            return delay.promise;
         }
         return service;
     }]);

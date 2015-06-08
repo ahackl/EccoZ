@@ -15,7 +15,8 @@ Database
 * [pouchdb]
 
 Export of data
-* [webdav-client]
+* [webdav]
+* [email]
 
 Charts
 * [angular-chart]
@@ -31,7 +32,6 @@ Tools
 * [Moment]
 * [RainbowVis-JS]
 
-
 ## Usage
 
 Install the ionic framework and copy the files to the www directory.
@@ -46,6 +46,7 @@ Install the ionic framework and copy the files to the www directory.
 [jQuery]: http://jquery.com/
 [patternLock]: https://github.com/s-yadav/patternLock
 [Underscore]: https://github.com/jashkenas/underscore
-[webdav-client]: https://github.com/sara-nl/js-webdav-client
+[webdav]: https://github.com/sara-nl/js-webdav-client
 [Moment]: https://github.com/moment/moment/
 [RainbowVis-JS]: https://github.com/anomal/RainbowVis-JS
+[email]: https://github.com/katzer/cordova-plugin-email-composer

@@ -27,6 +27,7 @@ _control.controller('MeterReadingsCtrl', ['$scope', '$rootScope', '$state', '$tr
         // ------------------------------------------------------------------------
         var myListener = $rootScope.$on('MeterReadingsCtrl_updated', function (event) {
             event.stopPropagation();
+            $scope.data.ListOfElements = [];
             getAllRows();
         });
         $scope.$on('$destroy', myListener);
@@ -99,7 +100,7 @@ _control.controller('MeterReadingsCtrl', ['$scope', '$rootScope', '$state', '$tr
                         $scope.data.noMoreItemsAvailable = false;
 
                     }
-                    makeChartData($scope.data.ListOfElements, 'new');
+                    //makeChartData($scope.data.ListOfElements, 'new');
               },
                 // reject - Handler
                 function (reason) {
@@ -126,7 +127,7 @@ _control.controller('MeterReadingsCtrl', ['$scope', '$rootScope', '$state', '$tr
                     if (reason.length == 0) {
                         $scope.data.noMoreItemsAvailable = true;
                     }
-                    makeChartData($scope.data.ListOfElements, 'new');
+                    //makeChartData($scope.data.ListOfElements, 'new');
                     $scope.$broadcast('scroll.infiniteScrollComplete');
                 },
                 // reject - Handler
@@ -141,12 +142,12 @@ _control.controller('MeterReadingsCtrl', ['$scope', '$rootScope', '$state', '$tr
         $scope.onItemEdit = function (item) {
             $ionicListDelegate.closeOptionButtons();
             var mId = $state.params.meterId;
-            $state.go('app.meter-reading-detail', { meterId: mId, readingId: item.doc._id });
+            $state.go('tab.meter-reading-detail', { meterId: mId, readingId: item.doc._id });
         };
 
         $scope.onItemNew = function () {
             var mId = $state.params.meterId;
-            $state.go('app.meter-reading-detail', { meterId: mId });
+            $state.go('tab.meter-reading-detail', { meterId: mId });
         };
 
         $scope.onItemDelete = function (item) {

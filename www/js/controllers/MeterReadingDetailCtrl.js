@@ -4,8 +4,8 @@
  * Copyright (c) 2014 ; Licensed GPL 2.0
  */
 
-_control.controller('MeterReadingDetailCtrl',['$scope', '$state', '$filter', '$translate', 'eccozDB',
-    function($scope, $state, $filter, $translate, eccozDB) {
+_control.controller('MeterReadingDetailCtrl',['$scope', '$state', '$filter', '$translate', 'eccozDB','$ionicHistory',
+    function($scope, $state, $filter, $translate, eccozDB, $ionicHistory) {
 
     // Manage the show/hide function for the save button
     $scope.change = function () {
@@ -112,7 +112,8 @@ _control.controller('MeterReadingDetailCtrl',['$scope', '$state', '$filter', '$t
             function(reason) {
                 console.log(reason);
                 $scope.$emit('MeterReadingsCtrl_updated');
-                $state.go('app.meter-readings',{ meterId : $scope.reading.EnergyMeter_id });
+                $ionicHistory.goBack();
+                //$state.go('app.meter-readings',{ meterId : $scope.reading.EnergyMeter_id });
                 //$state.go('^');
             },
             // reject - Handler

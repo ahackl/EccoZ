@@ -1,0 +1,53 @@
+<ion-view view-title="{{'M_TITEL_HOME'|translate}}">
+    <ion-nav-buttons side="right">
+        <a class="button button-icon icon ion-plus-round" ng-click="onItemNew()"></a>
+    </ion-nav-buttons>
+    <ion-content>
+        <ion-refresher
+                pulling-text="Pull to refresh..."
+                on-refresh="doRefresh()">
+        </ion-refresher>
+        <ion-list>
+            <ion-item class="item-remove-animate item-avatar item-icon-right"
+                      ng-repeat="oneElement in data.ListOfElements"
+                      type="item-text-wrap"
+                      href="#/tab/meter/{{oneElement.doc._id}}/readings">
+
+                    <div class="item item-divider">{{oneElement.doc.location}} / {{oneElement.doc.name}}</div>
+                    <div class="item item-body">
+                        <!--
+                        <div>
+                            <p>{{oneElement.doc.number}} / {{oneElement.doc.unit}}</p>
+                            <p>{{oneElement.doc.comment}}</p>
+                        </div>
+                        -->
+
+                <div class="eccoz-square">
+<!--
+                    <angularchart
+                            dataset="dataset"
+                            schema="schema"
+                            options="options">
+                    </angularchart>
+-->
+                    <eccoz-chart chartindex="{{$index}}"></eccoz-chart>
+
+                </div>
+
+                    </div>
+
+                <i class="icon ion-chevron-right icon-accessory"></i>
+
+                <ion-option-button class="button-calm" ng-click="onItemEdit($index)">
+                    {{'B_EDIT'|translate}}
+                </ion-option-button>
+                <ion-option-button class="button-assertive" ng-click="onItemDelete($index)">
+                    {{'B_DELETE'|translate}}
+                </ion-option-button>
+            </ion-item>
+        </ion-list>
+        <ion-infinite-scroll on-infinite="fetchMoreLines()"
+                             ng-if="!data.noMoreItemsAvailable"
+                             distance="10%"></ion-infinite-scroll>
+    </ion-content>
+</ion-view>

@@ -1,0 +1,51 @@
+<ion-view view-title="{{'M_TITEL_METER_DETAIL'|translate}}">
+    <ion-nav-buttons side="right">
+        <a class="button button-icon icon ion-checkmark"
+           ng-click="onItemUpdate()"
+           ng-show="isChanged" ng-cloak>
+        </a>
+    </ion-nav-buttons>
+    <ion-content class="padding">
+        <div class="list">
+            <label class="item item-input item-stacked-label">
+                ID: {{meter._id}}
+            </label>
+            <label class="item item-input item-stacked-label">
+                <span class="input-label">{{'F_LABEL_LOCATION'|translate}}</span>
+                <input type="text" placeholder="{{'F_PLACE_LOCATION'|translate}}"
+                       ng-model="meter.location"
+                       ng-change="change()">
+            </label>
+            <label class="item item-input item-stacked-label">
+                <span class="input-label">{{'F_LABEL_NAME'|translate}}</span>
+                <input type="text" placeholder="{{'F_PLACE_NAME'|translate}}"
+                       ng-model="meter.name"
+                       ng-change="change()">
+            </label>
+            <label class="item item-input item-stacked-label">
+                <span class="input-label">{{'F_LABEL_NUMBER'|translate}}</span>
+                <input type="text" placeholder="{{'F_PLACE_NUMBER'|translate}}"
+                       ng-model="meter.number"
+                       ng-change="change()">
+            </label>
+            <label class="item item-input item-stacked-label">
+                <span class="input-label">{{'F_LABEL_UNIT'|translate}}</span>
+                <input type="text" placeholder="{{'F_PLACE_UNIT'|translate}}"
+                       ng-model="meter.unit"
+                       ng-change="change()">
+            </label>
+            <label class="item item-input item-stacked-label">
+                <span class="input-label">{{'F_LABEL_NO_DAYS'|translate}}</span>
+                <input type="number" placeholder="{{'F_PLACE_NO_DAYS'|translate}}"
+                       ng-model="meter.nodays"
+                       ng-change="change()">
+            </label>
+            <label class="item item-input item-stacked-label">
+                <span class="input-label">{{'F_LABEL_COMMENT'|translate}}</span>
+                <input type="text" placeholder="{{'F_PLACE_COMMENT'|translate}}"
+                       ng-model="meter.comment"
+                       ng-change="change()">
+            </label>
+        </div>
+    </ion-content>
+</ion-view>
