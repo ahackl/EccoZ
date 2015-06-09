@@ -41,7 +41,7 @@ _service.service('Settings',['$translate','TwoFish', function($translate, TwoFis
     // internal settings
     var _MajorReleaseNo = 2;
     var _MinorReleaseNo = 0;
-    var _PatchLevelNo = 1;
+    var _PatchLevelNo = 2;
     var _UIlanguage = 'en';
 
 

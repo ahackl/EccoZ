@@ -10,7 +10,6 @@ _control.controller('EnergyMetersCtrl', ['$scope', '$rootScope', '$state', '$tra
               $interval, $ionicPopup, eccozDB, $ionicListDelegate, $filter, $q) {
 
 
-
         $scope.chartState = 'off';
         $interval(changeChartState, 1000);
         function changeChartState() {
@@ -31,7 +30,7 @@ _control.controller('EnergyMetersCtrl', ['$scope', '$rootScope', '$state', '$tra
             showDelete: false,          // Toggle icon on/off
             showEdit: true,             // Toggle icon on/off
             noMoreItemsAvailable: true, // Toggle scroll log
-            limitRows: 15,              // Number of rows in the UI
+            limitRows: 1,              // Number of rows in the UI
             ListOfElements: [],         // The list of the elements
             tableType: 'EnergyMeter'    // Name of the table
         };
@@ -47,8 +46,10 @@ _control.controller('EnergyMetersCtrl', ['$scope', '$rootScope', '$state', '$tra
             $q.all(promiseList).then(function (data) {
                     if ($scope.eChartDataset === undefined || addOrNew === 'new'){
                         $scope.eChartDataset = [];
+                        $scope.eChartDataset = data;
+                    } else {
+                        $scope.eChartDataset = $scope.eChartDataset.concat(data);
                     }
-                    $scope.eChartDataset = data;
                     $scope.chartState = 'on';
                 }
             );
