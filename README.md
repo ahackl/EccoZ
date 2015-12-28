@@ -8,11 +8,13 @@ Manage and collect meter readings for natural gas, water, electricity and many m
 EccoZ use:
 
 UI
-* [ioninc]
+* [ionic]
 * [patternLock]
 
 Database
 * [pouchdb]
+* [angular-pouchdb]
+
 
 Export of data
 * [webdav]
@@ -50,3 +52,5 @@ Install the ionic framework and copy the files to the www directory.
 [Moment]: https://github.com/moment/moment/
 [RainbowVis-JS]: https://github.com/anomal/RainbowVis-JS
 [email]: https://github.com/katzer/cordova-plugin-email-composer
+[angular-pouchdb]: https://github.com/angular-pouchdb/angular-pouchdb
+
