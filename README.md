@@ -36,10 +36,10 @@ Tools
 
 ## Usage
 
-Install the ionic framework and copy the files to the www directory.
+Install the ionic framework and copy the files to the "www" directory.
 
 
-[ioninc]: http://ionicframework.com
+[ionic]: http://ionicframework.com
 [pouchdb]: http://pouchdb.com
 [angular-chart]: https://github.com/maxklenk/angular-chart
 [angular-translate]: http://github.com/angular-translate/angular-translate
